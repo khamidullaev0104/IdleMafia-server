@@ -1,0 +1,4 @@
+module.exports = Object.freeze({
+    CHANNEL_ID: '846691656342044672',
+    BOTFATHER_ID: '778821428781908020'
+});
