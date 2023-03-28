@@ -3,8 +3,11 @@ const express = require('express');
 const path = require('path');
 var cors = require('cors')
 const app = express();
-app.use(cors())
 
+require('dotenv').config()
+console.log(process.env)
+
+app.use(cors())
 // Init Middleware
 app.use(express.json());
 app.use(express.static('.'));
@@ -20,6 +23,6 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.SERVER_PORT || 5000;
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
