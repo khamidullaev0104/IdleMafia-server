@@ -20,7 +20,7 @@ const getLevelResult = async (email, token, BotfatherChannelId) => {
     return datas;
 }
 
-const getLevelResultTest = async (email, token, BotfatherChannelId) => {
+const getLevelResultTest = async (email) => {
     let datas = [];
     let dataLevel1 = await getLevelCommand(0, "data/source/capos1.png", email);
     datas.push(...dataLevel1);

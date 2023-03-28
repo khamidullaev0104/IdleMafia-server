@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const axios = require("axios");
 
 const { getLevelResult } = require('../../controller/level')
 const { getPointResult } = require('../../controller/point')

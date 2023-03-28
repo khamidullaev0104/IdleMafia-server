@@ -15,7 +15,6 @@ const W_SPACE_BETWEEN_GANG_MEMBER = 40;
 const H_FP = 20;
 const H_TOTAL_FP = 30;
 const H_G = 200;
-const H_SPACE_NEW_LINE = 20;
 async function sharp_func(filePath, imgURL, position) {
     try {
         if(!fs.existsSync(filePath)) {
