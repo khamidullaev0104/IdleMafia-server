@@ -29,8 +29,7 @@ async function pointParseModule(reqData) {
         Datas: datas
     });
     const res = await point.save();
-    console.log("dsfsf      ", res);
-    return datas;
+    return res;
 }
 
 async function attackParseModule(reqData) {
@@ -45,8 +44,7 @@ async function attackParseModule(reqData) {
         Datas: datas
     });
     const res = await attack.save();
-    console.log("dsfsf      ", res);
-    return datas;
+    return res;
 }
 
 async function buildingParseModule(reqData) {
@@ -85,8 +83,7 @@ async function buildingParseModule(reqData) {
         Datas: datas
     });
     const res = await building.save();
-    console.log("dsfsf      ", res);
-    return datas;
+    return res;
 }
 
 module.exports = {

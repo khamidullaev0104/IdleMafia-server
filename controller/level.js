@@ -1,9 +1,12 @@
 const axios = require('axios');
+
+const Level = require('../models/Level');
 const getLevelCommand = require('../common/parseImage');
 
 const getLevelResult = async (token, BotfatherChannelId) => {
     // Get message from specific channel with limit
     let datas = [];
+    const timeNow = Date.now();
     for(let i = 0; ; i++){
       let res_msg = await axios.get(
         `https://discord.com/api/v9/channels/${BotfatherChannelId}/messages?limit=${i+1}`, { // 1077107224972898305 is Botfather's DM channel id
@@ -13,11 +16,16 @@ const getLevelResult = async (token, BotfatherChannelId) => {
         }
       })
       const img = res_msg.data[i].attachments[0].url;
-      let dataLevel = await getLevelCommand(0, img);
+      let dataLevel = await getLevelCommand(0, img, timeNow);
       datas.push(...dataLevel);
       if(res_msg.data[i].content.includes("Player rank, top 5 fight power,")) break;
     }
-    return datas;
+    const level = new Level({
+        Datas: dataLevel
+    });
+    const res = await level.save();
+
+    return res;
 }
 
 const getLevelResultTest = async (token, BotfatherChannelId) => {

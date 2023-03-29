@@ -28,7 +28,7 @@ router.post(
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(200).json({ status: false, message: "login error", err: errors.array() });
     }
 
     const { username, password } = req.body;
@@ -36,24 +36,24 @@ router.post(
     try {
       const ret = await login(username, password);
       if (typeof ret.user === 'undefined') {
-        return res.status(400).json({ status: false, message: ret});
+        return res.status(200).json({ status: false, message: "login error", err: ret});
       }
       return res.status(200).json({ status: true, message: 'login success', data: ret});
     } catch (err) {
       console.log(err)
-      return res.status(400).json({ status: false, message: "login error", err});
+      return res.status(200).json({ status: false, message: "login error", err});
     }
   }
 );
 
-router.get('/getUserbyId', 
+router.post('/getUserbyId', 
   async (req, res) => {
     try {
-      const user = await getUserInfoById(req.user.id); 
-      res.json(user);
+      const user = await getUserInfoById(req.body.id); 
+      return res.status(200).json({ status: true, message: 'getUserbyId success', data: ret});
     } catch (err) {
       console.error(err.message);
-      res.status(500).send('Server Error');
+      return res.status(500).send({ status: false, message: "getUserbyId error", err});
     }
   }
 );
@@ -70,24 +70,25 @@ router.post(
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(200).json({ status: false, message: "login error", err: errors.array() });
     }
     
     const { username, email, password } = req.body;
     try {
       const ret = await register(username, email, password);
       if (typeof ret.user === 'undefined') {
-        return res.status(400).json({ status: false, message: ret});
+        return res.status(200).json({ status: false, errors: "register error",  err: ret });
       }
-      return res.status(200).json({ status: true, message: 'register success'});
+      return res.status(200).json({ status: true, message: 'register success', data: ret});
     } catch (err) {
       console.log(err)
-      return res.status(400).json({ status: false, errors: "register error"});
+      return res.status(200).json({ status: false, errors: "register error", err});
     }
   }
 );
 
-router.post(
+///////////////////////////////////////////////////////////////GET request /////////////////////////
+router.get(
   '/createMessage',
   async (req, res) => {
     const { message } = req.body;
@@ -116,7 +117,7 @@ router.post(
       return res.status(200).json({ status: true, message: "send message to channel Success", data });
     } catch(err) {
       console.log(err);
-      return res.status(200).json({ status: false, errors: "createMessage error", err});
+      return res.status(200).json({ status: false, message: "createMessage error", err});
     }
   }
   );
@@ -132,7 +133,7 @@ router.post(
       return res.status(200).json({ status: true, message: "Success", data });
     } catch(err) {
       console.log(err)
-      return res.status(200).json({ status: false, errors: "getLevel error", err});
+      return res.status(200).json({ status: false, message: "getLevel error", err});
     }  
     
   }
@@ -147,13 +148,13 @@ router.post(
       return res.status(200).json({ status: true, message: "Success", data });
     } catch(err) {
       console.log(err)
-      return res.status(200).json({ status: false, errors: "getLevel error", err});
+      return res.status(200).json({ status: false, message: "getLevel error", err});
     }  
     
   }
 );
 
-router.post(
+router.get(
   '/sendMessageOnly',
   async (req, res) => {
     try{
@@ -162,13 +163,12 @@ router.post(
       return res.status(200).json({ status: true, message: "Success" });
     } catch(err) {
       console.log(err)
-      return res.status(200).json({ status: false, errors: "getBuilding error", err});
+      return res.status(200).json({ status: false, message: "getBuilding error", err});
     }  
   
   }
 );
 
-///////////////////////////////////////////////////////////////GET request /////////////////////////
 
 router.get(
   '/getPoint',
@@ -181,7 +181,7 @@ router.get(
       return res.status(200).json({ status: true, message: "Success", data });
     } catch(err) {
       console.log(err)
-      return res.status(200).json({ status: false, errors: "getPoint error", err});
+      return res.status(200).json({ status: false, message: "getPoint error", err});
     }  
   
   }
@@ -196,7 +196,7 @@ router.get(
       return res.status(200).json({ status: true, message: "Success", data });
     } catch(err) {
       console.log(err)
-      return res.status(200).json({ status: false, errors: "getPoint error", err});
+      return res.status(200).json({ status: false, message: "getPoint error", err});
     }  
   
   }
@@ -213,7 +213,7 @@ router.get(
       return res.status(200).json({ status: true, message: "Success", data });
     } catch(err) {
       console.log(err)
-      return res.status(200).json({ status: false, errors: "getAttack error", err});
+      return res.status(200).json({ status: false, message: "getAttack error", err});
     }  
   
   }
@@ -228,7 +228,7 @@ router.get(
       return res.status(200).json({ status: true, message: "Success", data });
     } catch(err) {
       console.log(err)
-      return res.status(200).json({ status: false, errors: "getAttack error", err});
+      return res.status(200).json({ status: false, message: "getAttack error", err});
     }  
   
   }
@@ -245,7 +245,7 @@ router.get(
       return res.status(200).json({ status: true, message: "Success", data });
     } catch(err) {
       console.log(err)
-      return res.status(200).json({ status: false, errors: "getBuilding error", err});
+      return res.status(200).json({ status: false, message: "getBuilding error", err});
     }  
   
   }
@@ -260,7 +260,7 @@ router.get(
       return res.status(200).json({ status: true, message: "Success", data });
     } catch(err) {
       console.log(err)
-      return res.status(200).json({ status: false, errors: "getBuilding error", err});
+      return res.status(200).json({ status: false, message: "getBuilding error", err});
     }  
   
   }

@@ -11,7 +11,7 @@ const  getBuildingResult = async (token, BotfatherChannelId) => {
                 'content-type': 'application/json'
             }
         })
-        if(res_msg.data[i].content === 'Off season') return "Off season"
+        if(res_msg.data[0].content === 'Off season') return "Off season"
         datas.your.push(...res_msg.data[1].embeds[0].fields)
         datas.enemy.push(...res_msg.data[0].embeds[0].fields)
         const res = await buildingParseModule(datas);
