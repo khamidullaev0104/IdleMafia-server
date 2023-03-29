@@ -1,32 +1,36 @@
-const axios = require('axios');
 
-async function loginByEmailPassword(email, password) {
-    try{
-        const ret = await axios.post('https://discord.com/api/v9/auth/login', {
-            login: email,
-            password: password,
-        })
-        return ret;
-    } catch(err) {
-        console.log("loginByEmailPassword error", err);
-    }
-}
+const bcrypt = require('bcryptjs');
 
-async function getProfileFromToken(token) {
-    try{
-        const res = await axios.get(`https://discord.com/api/v9/users/@me`, {
-          headers: {
-            'authorization': token,
-            'content-type': 'application/json'
+const User = require('../models/User');
+
+async function login(username, password) {
+    try {
+        let user = await User.findOne({ Username: username });
+  
+        if (!user) {
+          return 'Invalid Credentials-Username can not found';
+        }
+        const isMatch = await bcrypt.compare(password, user.Password);
+  
+        if (!isMatch) {
+          return 'Invalid Credentials-Password different';
+        }
+  
+        const payload = {
+          user: {
+            id: user.id,
+            email: user.Email,
+            username: user.Username,
+            avatar: user.Avatar
           }
-        })
-        return res;
-    } catch(err) {
-        console.log("loginByEmailPassword error", err);
-    }
+        };
+  
+        return payload;
+      } catch (err) {
+        console.error(err.message);
+        return 'Server error';
+      }
 }
 
-module.exports = {
-    loginByEmailPassword,
-    getProfileFromToken
-};
+
+module.exports = login;

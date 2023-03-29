@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const axios = require("axios");
+const { check, validationResult } = require('express-validator');
 
 const { getLevelResult } = require('../../controller/level')
 const { getPointResult } = require('../../controller/point')
@@ -8,28 +10,79 @@ const { getBuildingResult } = require('../../controller/building')
 
 const sendMessageToChannel = require('../../common/sendMessage')
 const getChannelID = require('../../common/getChannelID')
-const { loginByEmailPassword, getProfileFromToken } = require('../../common/login')
+const login = require('../../common/login')
+const register = require('../../common/register')
+const { getUserInfoById } = require('../../common/other');
 
-const { CHANNEL_ID, BOTFATHER_ID} = require('../../config/constants');
+const { CHANNEL_ID, BOTFATHER_ID, TOKEN} = require('../../config/constants');
+
+///////////////////////////////////////// POST request ////////////////////////////////////////
 
 router.post(
-  '/auth',
+  '/login',
+  check('username', 'Name is required').notEmpty(),
+  check(
+    'password',
+    'Please enter a password with 6 or more characters'
+  ).isLength({ min: 6 }),
   async (req, res) => {
-    const { email, password } = req.body;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { username, password } = req.body;
 
     try {
-      const ret = await loginByEmailPassword(email, password);
-      if (ret.data.token !== "undefined") {
-        const resMe = await getProfileFromToken(ret.data.token);
-        
-        resMe.data.token = ret.data.token;
-        return res.status(200).json({ status: true, message: 'Login success' , data: resMe.data});
-      } else {
-        return res.status(200).json({ status: false, message: 'Login error'});
+      const ret = await login(username, password);
+      if (typeof ret.user === 'undefined') {
+        return res.status(400).json({ status: false, message: ret});
       }
+      return res.status(200).json({ status: true, message: 'login success', data: ret});
     } catch (err) {
       console.log(err)
-      return res.status(200).json({ status: false, message: "auth function error"});
+      return res.status(400).json({ status: false, message: "login error", err});
+    }
+  }
+);
+
+router.get('/getUserbyId', 
+  async (req, res) => {
+    try {
+      const user = await getUserInfoById(req.user.id); 
+      res.json(user);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
+
+
+router.post(
+  '/register',
+  check('username', 'Name is required').notEmpty(),
+  check('email', 'Please include a valid email').isEmail(),
+  check(
+    'password',
+    'Please enter a password with 6 or more characters'
+  ).isLength({ min: 6 }),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    
+    const { username, email, password } = req.body;
+    try {
+      const ret = await register(username, email, password);
+      if (typeof ret.user === 'undefined') {
+        return res.status(400).json({ status: false, message: ret});
+      }
+      return res.status(200).json({ status: true, message: 'register success'});
+    } catch (err) {
+      console.log(err)
+      return res.status(400).json({ status: false, errors: "register error"});
     }
   }
 );
@@ -37,170 +90,66 @@ router.post(
 router.post(
   '/createMessage',
   async (req, res) => {
-    const { message, token, email } = req.body;
+    const { message } = req.body;
     console.log("createMessage function excution")
     try {
-      await sendMessageToChannel(token, CHANNEL_ID, BOTFATHER_ID, message);
+      await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, message);
       await new Promise(r => setTimeout(r, 300));
-      const BotfatherChannelId = await getChannelID(token, BOTFATHER_ID);
+      const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
       
       let data ;
       switch(message) {
         case "level":
-          data = await getLevelResult(email, token, BotfatherChannelId);
+          data = await getLevelResult(TOKEN, BotfatherChannelId);
           break;
         case "point":
-          data = await getPointResult(token, BotfatherChannelId);
+          data = await getPointResult(TOKEN, BotfatherChannelId);
           break;
         case "attack":
-          data = await getAttackResult(token, BotfatherChannelId);
+          data = await getAttackResult(TOKEN, BotfatherChannelId);
           break;
         case "building":
-          data = await getBuildingResult(token, BotfatherChannelId);
+          data = await getBuildingResult(TOKEN, BotfatherChannelId);
           break;
       }
       
       return res.status(200).json({ status: true, message: "send message to channel Success", data });
     } catch(err) {
       console.log(err);
-      return res.status(200).json({ status: false, message: "createMessage error", err});
+      return res.status(200).json({ status: false, errors: "createMessage error", err});
     }
   }
-);
-
-router.post(
-  '/getLevel',
-  async (req, res) => {
+  );
+  
+  router.get(
+    '/getLevel',
+    async (req, res) => {
     try{
-      const { token, email } = req.body;
-      await sendMessageToChannel(token, CHANNEL_ID, BOTFATHER_ID, "level");
+      await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, "level");
       await new Promise(r => setTimeout(r, 300));
-      const BotfatherChannelId = await getChannelID(token, BOTFATHER_ID);
-      const data = await getLevelResult(email, token, BotfatherChannelId);
+      const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
+      const data = await getLevelResult(TOKEN, BotfatherChannelId);
       return res.status(200).json({ status: true, message: "Success", data });
     } catch(err) {
       console.log(err)
-      return res.status(200).json({ status: false, message: "getLevel error", err});
+      return res.status(200).json({ status: false, errors: "getLevel error", err});
     }  
-  
-    }
-);
-
-router.post(
-  '/getLevelWithoutSend',
-  async (req, res) => {
-    try{
-      const { token, email } = req.body;
-      const BotfatherChannelId = await getChannelID(token, BOTFATHER_ID);
-      const data = await getLevelResult(email, token, BotfatherChannelId);
-      return res.status(200).json({ status: true, message: "Success", data });
-    } catch(err) {
-      console.log(err)
-      return res.status(200).json({ status: false, message: "getLevel error", err});
-    }  
-  
-    }
-);
-
-router.post(
-  '/getPoint',
-  async (req, res) => {
-    try{
-      const { token } = req.body;
-      await sendMessageToChannel(token, CHANNEL_ID, BOTFATHER_ID, "point");
-      await new Promise(r => setTimeout(r, 300));
-      const BotfatherChannelId = await getChannelID(token, BOTFATHER_ID);
-      const data = await getPointResult(token, BotfatherChannelId);
-      return res.status(200).json({ status: true, message: "Success", data });
-    } catch(err) {
-      console.log(err)
-      return res.status(200).json({ status: false, message: "getPoint error", err});
-    }  
-  
+    
   }
-);
-
-router.post(
-  '/getPointWithoutSend',
-  async (req, res) => {
-    try{
-      const { token } = req.body;
-      const BotfatherChannelId = await getChannelID(token, BOTFATHER_ID);
-      const data = await getPointResult(token, BotfatherChannelId);
+  );
+  
+  router.get(
+    '/getLevelWithoutSend',
+    async (req, res) => {
+      try{
+      const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
+      const data = await getLevelResult(TOKEN, BotfatherChannelId);
       return res.status(200).json({ status: true, message: "Success", data });
     } catch(err) {
       console.log(err)
-      return res.status(200).json({ status: false, message: "getPoint error", err});
+      return res.status(200).json({ status: false, errors: "getLevel error", err});
     }  
-  
-  }
-);
-
-router.post(
-  '/getAttack',
-  async (req, res) => {
-    try{
-      const { token } = req.body;
-      await sendMessageToChannel(token, CHANNEL_ID, BOTFATHER_ID, "attack");
-      await new Promise(r => setTimeout(r, 300));
-      const BotfatherChannelId = await getChannelID(token, BOTFATHER_ID);
-      const data = await getAttackResult(token, BotfatherChannelId);
-      return res.status(200).json({ status: true, message: "Success", data });
-    } catch(err) {
-      console.log(err)
-      return res.status(200).json({ status: false, message: "getAttack error", err});
-    }  
-  
-  }
-);
-
-router.post(
-  '/getAttackWithoutSend',
-  async (req, res) => {
-    try{
-      const { token } = req.body;
-      const BotfatherChannelId = await getChannelID(token, BOTFATHER_ID);
-      const data = await getAttackResult(token, BotfatherChannelId);
-      return res.status(200).json({ status: true, message: "Success", data });
-    } catch(err) {
-      console.log(err)
-      return res.status(200).json({ status: false, message: "getAttack error", err});
-    }  
-  
-  }
-);
-
-router.post(
-  '/getBuilding',
-  async (req, res) => {
-    try{
-      const { token } = req.body;
-      await sendMessageToChannel(token, CHANNEL_ID, BOTFATHER_ID, "building");
-      await new Promise(r => setTimeout(r, 300));
-      const BotfatherChannelId = await getChannelID(token, BOTFATHER_ID);
-      const data = await getBuildingResult(token, BotfatherChannelId);
-      return res.status(200).json({ status: true, message: "Success", data });
-    } catch(err) {
-      console.log(err)
-      return res.status(200).json({ status: false, message: "getBuilding error", err});
-    }  
-  
-  }
-);
-
-router.post(
-  '/getBuildingWithoutSend',
-  async (req, res) => {
-    try{
-      const { token } = req.body;
-      const BotfatherChannelId = await getChannelID(token, BOTFATHER_ID);
-      const data = await getBuildingResult(token, BotfatherChannelId);
-      return res.status(200).json({ status: true, message: "Success", data });
-    } catch(err) {
-      console.log(err)
-      return res.status(200).json({ status: false, message: "getBuilding error", err});
-    }  
-  
+    
   }
 );
 
@@ -208,15 +157,114 @@ router.post(
   '/sendMessageOnly',
   async (req, res) => {
     try{
-      const { token, message } = req.body;
-      await sendMessageToChannel(token, CHANNEL_ID, BOTFATHER_ID, message);
+      const { message } = req.body;
+      await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, message);
       return res.status(200).json({ status: true, message: "Success" });
     } catch(err) {
       console.log(err)
-      return res.status(200).json({ status: false, message: "getBuilding error", err});
+      return res.status(200).json({ status: false, errors: "getBuilding error", err});
     }  
   
   }
 );
+
+///////////////////////////////////////////////////////////////GET request /////////////////////////
+
+router.get(
+  '/getPoint',
+  async (req, res) => {
+    try{
+      await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, "point");
+      await new Promise(r => setTimeout(r, 300));
+      const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
+      const data = await getPointResult(TOKEN, BotfatherChannelId);
+      return res.status(200).json({ status: true, message: "Success", data });
+    } catch(err) {
+      console.log(err)
+      return res.status(200).json({ status: false, errors: "getPoint error", err});
+    }  
+  
+  }
+);
+
+router.get(
+  '/getPointWithoutSend',
+  async (req, res) => {
+    try{
+      const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
+      const data = await getPointResult(TOKEN, BotfatherChannelId);
+      return res.status(200).json({ status: true, message: "Success", data });
+    } catch(err) {
+      console.log(err)
+      return res.status(200).json({ status: false, errors: "getPoint error", err});
+    }  
+  
+  }
+);
+
+router.get(
+  '/getAttack',
+  async (req, res) => {
+    try{
+      await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, "attack");
+      await new Promise(r => setTimeout(r, 300));
+      const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
+      const data = await getAttackResult(TOKEN, BotfatherChannelId);
+      return res.status(200).json({ status: true, message: "Success", data });
+    } catch(err) {
+      console.log(err)
+      return res.status(200).json({ status: false, errors: "getAttack error", err});
+    }  
+  
+  }
+);
+
+router.get(
+  '/getAttackWithoutSend',
+  async (req, res) => {
+    try{
+      const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
+      const data = await getAttackResult(TOKEN, BotfatherChannelId);
+      return res.status(200).json({ status: true, message: "Success", data });
+    } catch(err) {
+      console.log(err)
+      return res.status(200).json({ status: false, errors: "getAttack error", err});
+    }  
+  
+  }
+);
+
+router.get(
+  '/getBuilding',
+  async (req, res) => {
+    try{
+      await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, "building");
+      await new Promise(r => setTimeout(r, 300));
+      const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
+      const data = await getBuildingResult(TOKEN, BotfatherChannelId);
+      return res.status(200).json({ status: true, message: "Success", data });
+    } catch(err) {
+      console.log(err)
+      return res.status(200).json({ status: false, errors: "getBuilding error", err});
+    }  
+  
+  }
+);
+
+router.get(
+  '/getBuildingWithoutSend',
+  async (req, res) => {
+    try{
+      const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
+      const data = await getBuildingResult(TOKEN, BotfatherChannelId);
+      return res.status(200).json({ status: true, message: "Success", data });
+    } catch(err) {
+      console.log(err)
+      return res.status(200).json({ status: false, errors: "getBuilding error", err});
+    }  
+  
+  }
+);
+
 
 module.exports = router;

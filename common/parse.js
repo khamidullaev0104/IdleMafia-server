@@ -1,4 +1,7 @@
 
+const Point = require('../models/Point');
+const Attack = require('../models/Attack');
+const Building = require('../models/Building');
 
 const strSlice = (str, strStart, strEnd) => {
     const posStart = str.indexOf(strStart);
@@ -22,7 +25,11 @@ async function pointParseModule(reqData) {
         const weekPoints = strSliceEND(element.value, 'WeekPoints: ', "\n", element.value.length)
         datas.push({ name: element.name, dayPoints, weekPoints})
     });
-
+    const point = new Point({
+        Datas: datas
+    });
+    const res = await point.save();
+    console.log("dsfsf      ", res);
     return datas;
 }
 
@@ -34,7 +41,11 @@ async function attackParseModule(reqData) {
         const defense = strSliceEND(element.value, 'Defense: ', "\n", element.value.length)
         datas.push({ name: element.name, attack, defense})
     });
-
+    const attack = new Attack({
+        Datas: datas
+    });
+    const res = await attack.save();
+    console.log("dsfsf      ", res);
     return datas;
 }
 
@@ -69,7 +80,12 @@ async function buildingParseModule(reqData) {
             datas.enemy.push({ name: element.name, status: true , team, capo, tfp })
         }
     });
-
+    
+    const building = new Building({
+        Datas: datas
+    });
+    const res = await building.save();
+    console.log("dsfsf      ", res);
     return datas;
 }
 

@@ -6,11 +6,12 @@ const  getBuildingResult = async (token, BotfatherChannelId) => {
         let datas = { your: [], enemy: []};
         let res_msg = await axios.get(
         `https://discord.com/api/v9/channels/${BotfatherChannelId}/messages?limit=${2}`, {
-        headers: {
-            'authorization': token,
-            'content-type': 'application/json'
-        }
+            headers: {
+                'authorization': token,
+                'content-type': 'application/json'
+            }
         })
+        if(res_msg.data[i].content === 'Off season') return "Off season"
         datas.your.push(...res_msg.data[1].embeds[0].fields)
         datas.enemy.push(...res_msg.data[0].embeds[0].fields)
         const res = await buildingParseModule(datas);

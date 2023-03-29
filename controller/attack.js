@@ -11,6 +11,7 @@ const  getAttackResult = async (token, BotfatherChannelId) => {
                 'content-type': 'application/json'
             }
           })
+          if(res_msg.data[i].content === 'Off season') return "Off season"
           datas.push(...res_msg.data[i].embeds[0].fields)
           if(typeof res_msg.data[i].embeds[0].description !== 'undefined' && res_msg.data[i].embeds[0].description.includes("For # of GvG attacks remaining, # of GvG defense available")) break;
         }

@@ -2,8 +2,10 @@ const sharp = require('sharp');
 const fs = require('fs');
 const Tesseract= require('tesseract.js');
 const request = require("request-promise");
+const Level = require('../models/Level');
+
 // constant
-const DIR_PREFIX = "data/img/";
+const { DIR_PREFIX } = require('../config/constants');
 let DIR_PATH;
 
 const H_GS = 10;
@@ -15,14 +17,13 @@ const W_SPACE_BETWEEN_GANG_MEMBER = 40;
 const H_FP = 20;
 const H_TOTAL_FP = 30;
 const H_G = 200;
+
 async function sharp_func(filePath, imgURL, position) {
     try {
-        if(!fs.existsSync(filePath)) {
-            const res = await request({ url: imgURL, encoding: null });
-            await sharp(res)
-                .extract(position)
-                .toFile(filePath)
-        }
+        const res = await request({ url: imgURL, encoding: null });
+        await sharp(res)
+            .extract(position)
+            .toFile(filePath)
     } catch (err) {
         console.log("parseImage.sharp_func error", err)
     }
@@ -115,9 +116,9 @@ async function parseFromImage(indIMG, imgURL, dataLevel) {
     }
 }
 
-async function getLevelCommand(index, imgURL, email) {
+async function getLevelCommand(index, imgURL) {
     let dataLevel = [];
-    DIR_PATH = DIR_PREFIX + email + "/";
+    DIR_PATH = DIR_PREFIX + Date.now() + "/";
     // from images
     try {
         if (!fs.existsSync(DIR_PATH)) {
@@ -125,6 +126,11 @@ async function getLevelCommand(index, imgURL, email) {
         }
         console.log(imgURL)
         dataLevel = await parseFromImage(index , imgURL, dataLevel);
+        const level = new Level({
+            Datas: dataLevel
+        });
+        const res = await level.save();
+        console.log("dsfsf      ", res);
         return dataLevel;
     } catch (err) {
         console.error("parseImage.getLevelCommand error", err);

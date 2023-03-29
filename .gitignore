@@ -1,12 +1,2 @@
-# npm
-node_modules
-package-lock.json
-
-#edit tool
-.idea
-
-# ignore additional files using core.excludesFile
-# https://git-scm.com/docs/gitignore
-
-#environment dependent
-.env
+node_modules/
+/level-img
