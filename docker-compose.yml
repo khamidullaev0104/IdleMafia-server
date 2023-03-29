@@ -8,13 +8,7 @@ services:
       - 27017:27017
     volumes:
       - gangwars-mongodb_data:/data/db
-    networks:
-      - gangwars-network
     restart: unless-stopped
 
 volumes:
   gangwars-mongodb_data:
-
-networks:
-  gangwars-network:
-    driver: bridge
