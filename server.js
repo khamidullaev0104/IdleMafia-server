@@ -1,6 +1,5 @@
 const express = require('express');
-var cors = require('cors')
-const path = require('path');
+let cors = require('cors')
 
 const connectDB = require('./config/db');
 
@@ -18,6 +17,6 @@ app.use(express.static('.'));
 app.use('/', require('./routes/api/route'));
 
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.SERVER_PORT || 5000;
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

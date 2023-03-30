@@ -1,3 +1,15 @@
-node_modules/
-/level-img
+level-img
+
+# npm
+node_modules
+package-lock.json
+
+#edit tool
+.idea
+
+# ignore additional files using core.excludesFile
+# https://git-scm.com/docs/gitignore
+
+#environment dependent
+.env
 config/constants.js
