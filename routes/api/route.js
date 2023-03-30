@@ -15,6 +15,13 @@ const { getUserInfoById } = require('../../common/other');
 
 const { CHANNEL_ID, BOTFATHER_ID, TOKEN} = require('../../config/constants');
 const Building = require('../../models/Building');
+const Attack = require('../../models/Attack');
+
+//////////////////////////////////////// Functions ////////////////////////////////////////
+
+function successResponse(res,result,message = "Success"){
+    return res.status(200).json({ status: true, message: message, result });
+}
 
 ///////////////////////////////////////// POST requests ////////////////////////////////////////
 
@@ -269,8 +276,14 @@ router.get(
 router.get(
     '/building',
     async (req, res) => {
-        let result = await Building.findOne();
-        return res.status(200).json({ status: true, message: "Success", result });
+        return successResponse(res,await Building.findOne());
+    }
+);
+
+router.get(
+    '/attack',
+    async (req, res) => {
+        return successResponse(res,await Attack.findOne());
     }
 );
 
