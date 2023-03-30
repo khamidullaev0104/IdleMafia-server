@@ -4,24 +4,24 @@ const UserSchema = new mongoose.Schema({
   Username: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   Email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   Password: {
     type: String,
-    required: true
+    required: true,
   },
   Avatar: {
-    type: String
+    type: String,
   },
   Date: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
 module.exports = mongoose.model('user', UserSchema);
