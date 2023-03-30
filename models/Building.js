@@ -2,42 +2,45 @@ const mongoose = require('mongoose');
 
 const BuildingSchema = new mongoose.Schema({
   Datas: {
-    Your: [{
-      Atatus: {
+    Your: [
+      {
+        Atatus: {
           type: String,
-          required: true
-      },
-      team: {
+          required: true,
+        },
+        team: {
           type: String,
-      },
-      capo: {
+        },
+        capo: {
           type: String,
-      },
-      tfp_left: {
+        },
+        tfp_left: {
           type: String,
+        },
       },
-    }],
-    Enemy: [{
-      status: {
+    ],
+    Enemy: [
+      {
+        status: {
           type: String,
-          required: true
-      },
-      team: {
+          required: true,
+        },
+        team: {
           type: String,
-      },
-      capo: {
+        },
+        capo: {
           type: String,
-      },
-      tfp_left: {
+        },
+        tfp_left: {
           type: String,
+        },
       },
-    }],
+    ],
   },
   Date: {
     type: Date,
-    default: Date.now
-  }
- 
+    default: Date.now,
+  },
 });
 
 module.exports = mongoose.model('Building', BuildingSchema);

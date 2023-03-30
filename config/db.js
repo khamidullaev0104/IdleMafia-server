@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
-const { MONGO_URL } = require('./constants')
+const { MONGO_URL } = require('./constants');
 const connectDB = async () => {
   try {
     await mongoose.connect(MONGO_URL, {
       useNewUrlParser: true,
       useCreateIndex: true,
       useFindAndModify: false,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
     });
 
     console.log('MongoDB Connected...');
