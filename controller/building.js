@@ -23,6 +23,12 @@ const getBuildingResult = async (token, BotfatherChannelId) => {
   }
 };
 
+const loadBuildingResult = async () => {
+  const buildings = await loadBuildingModule();
+  return buildings;
+};
+
 module.exports = {
   getBuildingResult,
+  loadBuildingResult,
 };

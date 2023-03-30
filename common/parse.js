@@ -111,8 +111,14 @@ async function buildingParseModule(reqData) {
   return res;
 }
 
+async function loadBuildingModule() {
+  const building = Building.find({});
+  return building;
+}
+
 module.exports = {
   pointParseModule,
   attackParseModule,
   buildingParseModule,
+  loadBuildingModule,
 };

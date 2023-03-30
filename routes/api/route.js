@@ -5,7 +5,7 @@ const { check, validationResult } = require('express-validator');
 const { getLevelResult } = require('../../controller/level');
 const { getPointResult } = require('../../controller/point');
 const { getAttackResult } = require('../../controller/attack');
-const { getBuildingResult } = require('../../controller/building');
+const { getBuildingResult, loadBuildingResult } = require('../../controller/building');
 
 const sendMessageToChannel = require('../../common/sendMessage');
 const getChannelID = require('../../common/getChannelID');
@@ -248,6 +248,19 @@ router.get('/getBuilding', async (req, res) => {
     return res
       .status(200)
       .json({ status: false, message: 'getBuilding error', err });
+  }
+});
+
+router.get('/loadBuilding', async (req, res) => {
+  try {
+    const data = await loadBuildingResult();
+    return res.status(200).json({ status: true, message: 'Success', data });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(200)
+      .json({ status: false, message: 'loadBuilding error', err });
+    }
   }
 });
 
