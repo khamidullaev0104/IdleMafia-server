@@ -5,4 +5,4 @@ source "$SCRIPT_DIR/../output.sh"
 bash "$SCRIPT_DIR/stop.sh"
 
 print_title "Starting containers"
-docker compose up
+docker compose up -d
