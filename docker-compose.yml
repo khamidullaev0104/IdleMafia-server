@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   mongodb:
-    image: mongo@sha256:cc4522f3f5c0d3435046eb51b1d8a633d8e24d8e661b6ba127a98e5519d11bde
+    image: mongo:${TAG}
     container_name: mongodb
     ports:
       - 27017:27017
