@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const axios = require("axios");
 const { check, validationResult } = require('express-validator');
 
 const { getLevelResult } = require('../../controller/level')
@@ -50,7 +49,7 @@ router.post('/getUserbyId',
   async (req, res) => {
     try {
       const user = await getUserInfoById(req.body.id); 
-      return res.status(200).json({ status: true, message: 'getUserbyId success', data: ret});
+      return res.status(200).json({ status: true, message: 'getUserbyId success', data: user});
     } catch (err) {
       console.error(err.message);
       return res.status(500).send({ status: false, message: "getUserbyId error", err});

@@ -21,14 +21,14 @@ const getLevelResult = async (token, BotfatherChannelId) => {
       if(res_msg.data[i].content.includes("Player rank, top 5 fight power,")) break;
     }
     const level = new Level({
-        Datas: dataLevel
+        Datas: datas
     });
     const res = await level.save();
 
     return res;
 }
 
-const getLevelResultTest = async (token, BotfatherChannelId) => {
+const getLevelResultTest = async () => {
     let datas = [];
     let dataLevel1 = await getLevelCommand(0, "data/source/capos1.png");
     datas.push(...dataLevel1);
