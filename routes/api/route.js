@@ -14,8 +14,9 @@ const register = require('../../common/register')
 const { getUserInfoById } = require('../../common/other');
 
 const { CHANNEL_ID, BOTFATHER_ID, TOKEN} = require('../../config/constants');
+const Building = require('../../models/Building');
 
-///////////////////////////////////////// POST request ////////////////////////////////////////
+///////////////////////////////////////// POST requests ////////////////////////////////////////
 
 router.post(
   '/login',
@@ -86,7 +87,7 @@ router.post(
   }
 );
 
-///////////////////////////////////////////////////////////////GET request /////////////////////////
+///////////////////////////////////////////////////////////////GET requests /////////////////////////
 router.get(
   '/createMessage',
   async (req, res) => {
@@ -265,5 +266,12 @@ router.get(
   }
 );
 
+router.get(
+    '/building',
+    async (req, res) => {
+        let result = await Building.findOne();
+        return res.status(200).json({ status: true, message: "Success", result });
+    }
+);
 
 module.exports = router;
