@@ -21,15 +21,17 @@ const { getUserInfoById } = require('../../common/other');
 
 const { CHANNEL_ID, BOTFATHER_ID, TOKEN } = require('../../config/constants');
 
-function getSuccessResponse(res, data) {
+//////////////////////////////////////// Functions ////////////////////////////////////////
+
+function successResponse(res, data) {
   return res.status(200).json({ status: true, message: 'Success', data });
 }
 
-function getErrorResponse(res, message, error) {
+function errorResponse(res, message, error) {
   return res.status(200).json({ status: false, message, err: error });
 }
 
-///////////////////////////////////////// POST request ////////////////////////////////////////
+///////////////////////////////////////// POST requests ////////////////////////////////////////
 
 router.post(
   '/login',
@@ -117,7 +119,7 @@ router.post(
   }
 );
 
-///////////////////////////////////////////////////////////////GET request /////////////////////////
+///////////////////////////////////////////////////////////////GET requests /////////////////////////
 router.get('/createMessage', async (req, res) => {
   const { message } = req.body;
   console.log('createMessage function excution');
@@ -237,13 +239,13 @@ router.get('/getAttack', async (req, res) => {
   }
 });
 
-router.get('/loadAttack', async (req, res) => {
+router.get('/attack', async (req, res) => {
   try {
     const data = await loadAttackResult();
-    return getSuccessResponse(res, data);
+    return successResponse(res, data);
   } catch (err) {
     console.log(err);
-    return getErrorResponse(res, 'loadAttack error', err);
+    return errorResponse(res, 'loadAttack error', err);
   }
 });
 
@@ -275,13 +277,13 @@ router.get('/getBuilding', async (req, res) => {
   }
 });
 
-router.get('/loadBuilding', async (req, res) => {
+router.get('/building', async (req, res) => {
   try {
     const data = await loadBuildingResult();
-    return getSuccessResponse(res, data);
+    return successResponse(res, data);
   } catch (err) {
     console.log(err);
-    return getErrorResponse(res, 'loadBuilding error', err);
+    return errorResponse(res, 'loadBuilding error', err);
   }
 });
 

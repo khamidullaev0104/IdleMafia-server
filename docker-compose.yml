@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   mongodb:
-    image: mongo:${TAG}
+    image: mongo:${MONGO_DB_TAG}
     container_name: mongodb
     ports:
       - 27017:27017
