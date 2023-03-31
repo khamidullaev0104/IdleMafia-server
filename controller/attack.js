@@ -1,8 +1,5 @@
 const { attackParseModule, loadAttackModule } = require('../common/parse');
 const { axiosGetChannel } = require('../common/axiosFunctions');
-const Building = require("../models/Schemas/BuildingSchema");
-const AttackSchema = require('../models/Schemas/AttackSchema');
-const {getTotalDefense} = require("../models/defense");
 
 const OFF_SEASON = 'Off season';
 const END_OF_LOOP =
