@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { attackParseModule } = require('../common/parse');
+const { attackParseModule, loadAttackModule } = require('../common/parse');
 const getAttackResult = async (token, BotfatherChannelId) => {
   try {
     let datas = [];
@@ -32,6 +32,12 @@ const getAttackResult = async (token, BotfatherChannelId) => {
   }
 };
 
+const loadAttackResult = async () => {
+  const attack = await loadAttackModule();
+  return attack;
+};
+
 module.exports = {
   getAttackResult,
+  loadAttackResult,
 };

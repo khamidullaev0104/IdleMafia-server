@@ -4,8 +4,14 @@ const { check, validationResult } = require('express-validator');
 
 const { getLevelResult } = require('../../controller/level');
 const { getPointResult } = require('../../controller/point');
-const { getAttackResult } = require('../../controller/attack');
-const { getBuildingResult, loadBuildingResult } = require('../../controller/building');
+const {
+  getAttackResult,
+  loadAttackResult,
+} = require('../../controller/attack');
+const {
+  getBuildingResult,
+  loadBuildingResult,
+} = require('../../controller/building');
 
 const sendMessageToChannel = require('../../common/sendMessage');
 const getChannelID = require('../../common/getChannelID');
@@ -14,6 +20,14 @@ const register = require('../../common/register');
 const { getUserInfoById } = require('../../common/other');
 
 const { CHANNEL_ID, BOTFATHER_ID, TOKEN } = require('../../config/constants');
+
+function getSuccessResponse(res, data) {
+  return res.status(200).json({ status: true, message: 'Success', data });
+}
+
+function getErrorResponse(res, message, error) {
+  return res.status(200).json({ status: false, message, err: error });
+}
 
 ///////////////////////////////////////// POST request ////////////////////////////////////////
 
@@ -223,6 +237,16 @@ router.get('/getAttack', async (req, res) => {
   }
 });
 
+router.get('/loadAttack', async (req, res) => {
+  try {
+    const data = await loadAttackResult();
+    return getSuccessResponse(res, data);
+  } catch (err) {
+    console.log(err);
+    return getErrorResponse(res, 'loadAttack error', err);
+  }
+});
+
 router.get('/getAttackWithoutSend', async (req, res) => {
   try {
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
@@ -254,13 +278,10 @@ router.get('/getBuilding', async (req, res) => {
 router.get('/loadBuilding', async (req, res) => {
   try {
     const data = await loadBuildingResult();
-    return res.status(200).json({ status: true, message: 'Success', data });
+    return getSuccessResponse(res, data);
   } catch (err) {
     console.log(err);
-    return res
-      .status(200)
-      .json({ status: false, message: 'loadBuilding error', err });
-    }
+    return getErrorResponse(res, 'loadBuilding error', err);
   }
 });
 

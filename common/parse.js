@@ -56,6 +56,11 @@ async function attackParseModule(reqData) {
   return res;
 }
 
+async function loadAttackModule() {
+  const attack = await Attack.find({});
+  return attack;
+}
+
 async function buildingParseModule(reqData) {
   let { your, enemy } = reqData;
   const datas = { your: [], enemy: [] };
@@ -112,7 +117,7 @@ async function buildingParseModule(reqData) {
 }
 
 async function loadBuildingModule() {
-  const building = Building.find({});
+  const building = await Building.find({});
   return building;
 }
 
@@ -120,5 +125,6 @@ module.exports = {
   pointParseModule,
   attackParseModule,
   buildingParseModule,
+  loadAttackModule,
   loadBuildingModule,
 };
