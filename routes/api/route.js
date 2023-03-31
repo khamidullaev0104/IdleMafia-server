@@ -4,6 +4,8 @@ const { check, validationResult } = require('express-validator');
 
 const { getLevelResult } = require('../../controller/level');
 const { getPointResult } = require('../../controller/point');
+const { getTotalDefense,getTotalAttack } = require('../../models/defense');
+
 const {
   getAttackResult,
   loadAttackResult,
@@ -28,6 +30,7 @@ function successResponse(res, data) {
 }
 
 function errorResponse(res, message, error) {
+  console.log(error);
   return res.status(200).json({ status: false, message, err: error });
 }
 
@@ -300,4 +303,20 @@ router.get('/getBuildingWithoutSend', async (req, res) => {
   }
 });
 
+router.get('/defense/total', async (req, res) => {
+  try {
+    const data = await getTotalDefense();
+    return successResponse(res, data);
+  } catch (err) {
+    return errorResponse(res, 'Failed to get total defense', err)
+  }
+});
+router.get('/attack/total', async (req, res) => {
+  try {
+    const data = await getTotalAttack();
+    return successResponse(res, data);
+  } catch (err) {
+    return errorResponse(res, 'Failed to get total attack', err)
+  }
+});
 module.exports = router;

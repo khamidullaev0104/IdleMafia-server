@@ -1,6 +1,6 @@
-const Point = require('../models/Point');
-const Attack = require('../models/Attack');
-const Building = require('../models/Building');
+const Point = require('../models/Schemas/PointSchema');
+const Attack = require('../models/Schemas/AttackSchema');
+const Building = require('../models/Schemas/BuildingSchema');
 
 const strSlice = (str, strStart, strEnd) => {
   const posStart = str.indexOf(strStart);

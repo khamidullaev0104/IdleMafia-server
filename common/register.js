@@ -2,7 +2,7 @@ const gravatar = require('gravatar');
 const normalize = require('normalize-url');
 const bcrypt = require('bcryptjs');
 
-const User = require('../models/User');
+const User = require('../models/Schemas/UserSchema');
 
 async function register(username, email, password) {
   try {

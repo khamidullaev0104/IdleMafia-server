@@ -1,5 +1,6 @@
 const { attackParseModule, loadAttackModule } = require('../common/parse');
 const { axiosGetChannel } = require('../common/axiosFunctions');
+
 const OFF_SEASON = 'Off season';
 const END_OF_LOOP =
   'For # of GvG attacks remaining, # of GvG defense available';

@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const Level = require('../models/Level');
+const Level = require('../models/Schemas/LevelSchema');
 const getLevelCommand = require('../common/parseImage');
 
 const getLevelResult = async (token, BotfatherChannelId) => {
