@@ -1,18 +1,15 @@
 const mongoose = require('mongoose');
 const { MONGO_URL } = require('./constants');
 
-const connectDB = () => {
+const connectDB = async () => {
   try {
-    mongoose
-      .connect(MONGO_URL, {
-        useNewUrlParser: true,
-        useCreateIndex: true,
-        useFindAndModify: false,
-        useUnifiedTopology: true,
-      })
-      .then(() => {
-        console.log('MongoDB Connected...');
-      });
+    await mongoose.connect(MONGO_URL, {
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      useFindAndModify: false,
+      useUnifiedTopology: true,
+    });
+    console.log('MongoDB Connected...');
   } catch (err) {
     console.error(err.message);
     process.exit(1);
