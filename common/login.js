@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 
-const User = require('../models/User');
+const User = require('../models/Schemas/UserSchema');
 
 async function login(username, password) {
   try {

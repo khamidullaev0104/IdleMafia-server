@@ -1,5 +1,5 @@
 const axios = require('axios');
-const User = require('../models/User');
+const User = require('../models/Schemas/UserSchema');
 
 async function loginByDiscordEmailPassword(email, password) {
   try {
