@@ -110,14 +110,15 @@ async function buildingParseModule(reqData) {
   });
 
   const building = new Building({
-    Datas: datas,
+    your: datas.your,
+    enemy: datas.enemy,
   });
   const res = await building.save();
   return res;
 }
 
 async function loadBuildingModule() {
-  const building = await Building.find({});
+  const building = await Building.findOne({}).sort({ Date: -1 }).limit(1);
   return building;
 }
 
