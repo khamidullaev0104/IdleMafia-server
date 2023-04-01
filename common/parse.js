@@ -1,3 +1,7 @@
+const Point = require('../models/Schemas/PointSchema');
+const Attack = require('../models/Schemas/AttackSchema');
+const Building = require('../models/Schemas/BuildingSchema');
+
 const strSlice = (str, strStart, strEnd) => {
   const posStart = str.indexOf(strStart);
   const posEnd = str.indexOf(strEnd);
@@ -18,14 +22,18 @@ async function pointParseModule(reqData) {
   reqData.forEach((element) => {
     const dayPoints = strSlice(element.value, 'DayPoints: ', '\n');
     const weekPoints = strSliceEND(
-      element.value,
-      'WeekPoints: ',
-      '\n',
-      element.value.length
+        element.value,
+        'WeekPoints: ',
+        '\n',
+        element.value.length
     );
     datas.push({ name: element.name, dayPoints, weekPoints });
   });
-  return datas;
+  const point = new Point({
+    Datas: datas,
+  });
+  const res = await point.save();
+  return res;
 }
 
 async function attackParseModule(reqData) {
@@ -34,14 +42,23 @@ async function attackParseModule(reqData) {
   reqData.forEach((element) => {
     const attack = strSlice(element.value, 'Attack: ', 'Defense: ');
     const defense = strSliceEND(
-      element.value,
-      'Defense: ',
-      '\n',
-      element.value.length
+        element.value,
+        'Defense: ',
+        '\n',
+        element.value.length
     );
     datas.push({ name: element.name, attack, defense });
   });
-  return datas;
+  const attack = new Attack({
+    Datas: datas,
+  });
+  const res = await attack.save();
+  return res;
+}
+
+async function loadAttackModule() {
+  const attack = await Attack.find({});
+  return attack;
 }
 
 async function buildingParseModule(reqData) {
@@ -56,15 +73,15 @@ async function buildingParseModule(reqData) {
     } else {
       const team = strSlice(element.value, 'Team: ', 'Capo: ');
       const capo = strSlice(
-        element.value,
-        'Capo: ',
-        '\nTotal fight power left: '
+          element.value,
+          'Capo: ',
+          '\nTotal fight power left: '
       );
       const tfp = strSliceEND(
-        element.value,
-        'Total fight power left: ',
-        '\n',
-        element.value.length
+          element.value,
+          'Total fight power left: ',
+          '\n',
+          element.value.length
       );
       datas.your.push({ name: element.name, status: true, team, capo, tfp });
     }
@@ -78,25 +95,57 @@ async function buildingParseModule(reqData) {
     } else {
       const team = strSlice(element.value, 'Team: ', 'Capo: ');
       const capo = strSlice(
-        element.value,
-        'Capo: ',
-        '\nTotal fight power left: '
+          element.value,
+          'Capo: ',
+          '\nTotal fight power left: '
       );
       const tfp = strSliceEND(
-        element.value,
-        'Total fight power left: ',
-        '\n',
-        element.value.length
+          element.value,
+          'Total fight power left: ',
+          '\n',
+          element.value.length
       );
       datas.enemy.push({ name: element.name, status: true, team, capo, tfp });
     }
   });
 
-  return datas;
+  const building = new Building({
+    your: datas.your,
+    enemy: datas.enemy,
+  });
+  const res = await building.save();
+  return res;
+}
+
+async function loadBuildingModule() {
+  const buildings = await Building.findOne({}).sort({ Date: -1 }).limit(1);
+  const result = {
+    you: _countBuildings(buildings.your),
+    enemy: _countBuildings(buildings.enemy),
+  };
+
+  return result;
+}
+
+function _countBuildings(buildings) {
+  const counted = buildings.reduce(
+      (result, building) => {
+        if (building.status) {
+          result.remaining += 1;
+        } else {
+          result.completed += 1;
+        }
+        return result;
+      },
+      { remaining: 0, completed: 0 }
+  );
+  return counted;
 }
 
 module.exports = {
   pointParseModule,
   attackParseModule,
   buildingParseModule,
-}; 
+  loadAttackModule,
+  loadBuildingModule,
+};
