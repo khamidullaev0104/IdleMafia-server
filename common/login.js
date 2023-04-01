@@ -1,10 +1,10 @@
 const bcrypt = require('bcryptjs');
 
-const User = require('../models/Schemas/UserSchema');
+const UserSchema = require('../models/Schemas/UserSchema');
 
 async function login(username, password) {
   try {
-    let user = await User.findOne({ Username: username });
+    let user = await UserSchema.findOne({ Username: username });
 
     if (!user) {
       return 'Invalid Credentials-Username can not found';
@@ -30,5 +30,6 @@ async function login(username, password) {
     return 'Server error';
   }
 }
+
 
 module.exports = login;

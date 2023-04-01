@@ -1,7 +1,3 @@
-const Point = require('../models/Schemas/PointSchema');
-const Attack = require('../models/Schemas/AttackSchema');
-const Building = require('../models/Schemas/BuildingSchema');
-
 const strSlice = (str, strStart, strEnd) => {
   const posStart = str.indexOf(strStart);
   const posEnd = str.indexOf(strEnd);
@@ -29,11 +25,7 @@ async function pointParseModule(reqData) {
     );
     datas.push({ name: element.name, dayPoints, weekPoints });
   });
-  const point = new Point({
-    Datas: datas,
-  });
-  const res = await point.save();
-  return res;
+  return datas;
 }
 
 async function attackParseModule(reqData) {
@@ -49,16 +41,7 @@ async function attackParseModule(reqData) {
     );
     datas.push({ name: element.name, attack, defense });
   });
-  const attack = new Attack({
-    Datas: datas,
-  });
-  const res = await attack.save();
-  return res;
-}
-
-async function loadAttackModule() {
-  const attack = await Attack.find({});
-  return attack;
+  return datas;
 }
 
 async function buildingParseModule(reqData) {
@@ -109,23 +92,11 @@ async function buildingParseModule(reqData) {
     }
   });
 
-  const building = new Building({
-    your: datas.your,
-    enemy: datas.enemy,
-  });
-  const res = await building.save();
-  return res;
-}
-
-async function loadBuildingModule() {
-  const building = await Building.findOne({}).sort({ Date: -1 }).limit(1);
-  return building;
+  return datas;
 }
 
 module.exports = {
   pointParseModule,
   attackParseModule,
   buildingParseModule,
-  loadAttackModule,
-  loadBuildingModule,
-};
+}; 

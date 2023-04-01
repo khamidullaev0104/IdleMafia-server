@@ -7,17 +7,17 @@ const LevelSchema = new mongoose.Schema({
         type: String,
         required: true,
       },
-      gang_member: [
+      members: [
         {
-          Name: {
+          name: {
             type: String,
             required: true,
           },
-          Url: {
+          img: {
             type: String,
             required: true,
           },
-          Fp: {
+          fp: {
             type: String,
             required: true,
           },

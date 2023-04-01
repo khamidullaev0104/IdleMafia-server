@@ -2,7 +2,7 @@ const sharp = require('sharp');
 const fs = require('fs');
 const Tesseract = require('tesseract.js');
 const request = require('request-promise');
-
+const ISLOCAL = 1;
 // constant
 const { DIR_PREFIX } = require('../config/constants');
 let DIR_PATH;
@@ -19,12 +19,13 @@ const H_G = 200;
 
 async function sharp_func(filePath, imgURL, position) {
   try {
-    const res = await request({ url: imgURL, encoding: null });
-    await sharp(res).extract(position).toFile(filePath);
+    if (ISLOCAL !== 1) imgURL = await request({ url: imgURL, encoding: null });
+    await sharp(imgURL).extract(position).toFile(filePath);
   } catch (err) {
     console.log('parseImage.sharp_func error', err);
   }
 }
+
 async function getGangNameFromImage(indIMG, indMember, imgURL) {
   try {
     await sharp_func(
@@ -56,7 +57,7 @@ async function getGangMembersFromImage(indIMG, indMember, imgURL) {
   try {
     let members = [];
     for (let ind = 0; ind < 5; ind++) {
-      let member = { img: '', fp: '' };
+      let member = { img: '', fp: '', name: 'xxx' };
       member.img =
         DIR_PATH + indIMG + '-' + indMember + '-' + ind + '-' + 'member.png';
 
@@ -129,6 +130,11 @@ async function parseFromImage(indIMG, imgURL, dataLevel) {
   }
 }
 
+async function storeImgToLocal(imgURL, filePath) {
+  const res = await request({ url: imgURL, encoding: null });
+  await sharp(res).toFile(filePath);
+}
+
 async function getLevelCommand(dirName, index, imgURL) {
   let dataLevel = [];
   DIR_PATH = DIR_PREFIX + dirName + '/';
@@ -136,6 +142,11 @@ async function getLevelCommand(dirName, index, imgURL) {
   try {
     if (!fs.existsSync(DIR_PATH)) {
       fs.mkdirSync(DIR_PATH);
+    }
+    if (ISLOCAL === 1) {
+      const newImgURL = DIR_PATH + dirName + index + '.png';
+      await storeImgToLocal(imgURL, newImgURL);
+      imgURL = newImgURL;
     }
     dataLevel = await parseFromImage(index, imgURL, dataLevel);
 
@@ -145,4 +156,4 @@ async function getLevelCommand(dirName, index, imgURL) {
   }
 }
 
-module.exports = getLevelCommand;
+module.exports = getLevelCommand; 

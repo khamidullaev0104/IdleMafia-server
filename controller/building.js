@@ -1,5 +1,6 @@
 const axios = require('axios');
-const { buildingParseModule, loadBuildingModule } = require('../common/parse');
+const { buildingParseModule } = require('../common/parse');
+const BuildingSchema = require('../models/Schemas/BuildingSchema');
 
 const getBuildingResult = async (token, BotfatherChannelId) => {
   try {
@@ -17,18 +18,25 @@ const getBuildingResult = async (token, BotfatherChannelId) => {
     datas.your.push(...res_msg.data[1].embeds[0].fields);
     datas.enemy.push(...res_msg.data[0].embeds[0].fields);
     const res = await buildingParseModule(datas);
-    return res;
+    const building = new BuildingSchema({
+      Datas: res,
+    });
+    return await building.save();
   } catch (err) {
     console.log('getBuildingResult error', err);
   }
 };
 
-const loadBuildingResult = async () => {
-  const buildings = await loadBuildingModule();
-  return buildings;
+const getBuildingResultFromDB = async (date) => {
+  try {
+    if (date === '-1') return await BuildingSchema.findOne().sort({ _id: -1 });
+    else return await BuildingSchema.find({ date: { $gte: date } });
+  } catch (err) {
+    console.log('getLevelResultFromDB ERROR:', err);
+  }
 };
 
 module.exports = {
   getBuildingResult,
-  loadBuildingResult,
-};
+  getBuildingResultFromDB,
+}; 

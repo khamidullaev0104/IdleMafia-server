@@ -2,11 +2,11 @@ const gravatar = require('gravatar');
 const normalize = require('normalize-url');
 const bcrypt = require('bcryptjs');
 
-const User = require('../models/Schemas/UserSchema');
+const UserSchema = require('../models/Schemas/UserSchema');
 
 async function register(username, email, password) {
   try {
-    let user = await User.findOne({ email });
+    let user = await UserSchema.findOne({ email });
 
     if (user) {
       return 'User already exists';
@@ -21,7 +21,7 @@ async function register(username, email, password) {
       { forceHttps: true }
     );
 
-    user = new User({
+    user = new UserSchema({
       Username: username,
       Email: email,
       Avatar: avatar,

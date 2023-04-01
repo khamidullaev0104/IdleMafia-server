@@ -1,5 +1,6 @@
 const { attackParseModule, loadAttackModule } = require('../common/parse');
 const { axiosGetChannel } = require('../common/axiosFunctions');
+const Attack = require('../models/Attack');
 
 const OFF_SEASON = 'Off season';
 const END_OF_LOOP =
@@ -30,11 +31,20 @@ const getAttackResult = async (token, ChannelId) => {
 };
 
 const loadAttackResult = async () => {
-  const attack = await loadAttackModule();
-  return attack;
+  return await loadAttackModule();
+};
+
+const getAttackResultFromDB = async (date) => {
+  try {
+    if (date === '-1') return await Attack.findOne().sort({ _id: -1 });
+    else return await Attack.find({ date: { $gte: date } });
+  } catch (err) {
+    console.log('getLevelResultFromDB ERROR:', err);
+  }
 };
 
 module.exports = {
   getAttackResult,
   loadAttackResult,
+  getAttackResultFromDB,
 };

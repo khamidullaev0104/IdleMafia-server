@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const Level = require('../models/Schemas/LevelSchema');
+const LevelSchema = require('../models/Schemas/LevelSchema');
 const getLevelCommand = require('../common/parseImage');
 
 const getLevelResult = async (token, BotfatherChannelId) => {
@@ -21,12 +21,12 @@ const getLevelResult = async (token, BotfatherChannelId) => {
       }
     );
     const img = res_msg.data[i].attachments[0].url;
-    let dataLevel = await getLevelCommand(0, img, timeNow);
+    let dataLevel = await getLevelCommand(timeNow, i, img);
     datas.push(...dataLevel);
     if (res_msg.data[i].content.includes('Player rank, top 5 fight power,'))
       break;
   }
-  const level = new Level({
+  const level = new LevelSchema({
     Datas: datas,
   });
   const res = await level.save();
@@ -34,17 +34,16 @@ const getLevelResult = async (token, BotfatherChannelId) => {
   return res;
 };
 
-const getLevelResultTest = async () => {
-  let datas = [];
-  let dataLevel1 = await getLevelCommand(0, 'data/source/capos1.png');
-  datas.push(...dataLevel1);
-  let dataLeve2 = await getLevelCommand(1, 'data/source/capos2.png');
-  datas.push(...dataLeve2);
-
-  return datas;
+const getLevelResultFromDB = async (date) => {
+  try {
+    if (date === '-1') return await LevelSchema.findOne().sort({ _id: -1 });
+    else return await LevelSchema.find({ date: { $gte: date } });
+  } catch (err) {
+    console.log('getLevelResultFromDB ERROR:', err);
+  }
 };
 
 module.exports = {
   getLevelResult,
-  getLevelResultTest,
+  getLevelResultFromDB,
 };

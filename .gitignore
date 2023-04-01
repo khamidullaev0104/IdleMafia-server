@@ -1,5 +1,3 @@
-level-img
-
 # npm
 node_modules
 package-lock.json
@@ -13,3 +11,10 @@ package-lock.json
 #environment dependent
 .env
 config/constants.js
+config/production.json
+config/default.json
+
+
+level-img
+client/build
+client/.eslintcache

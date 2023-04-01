@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { pointParseModule } = require('../common/parse');
+const PointSchema = require('../models/Schemas/PointSchema');
 
 const getPointResult = async (token, BotfatherChannelId) => {
   try {
@@ -26,12 +27,25 @@ const getPointResult = async (token, BotfatherChannelId) => {
         break;
     }
     const res = await pointParseModule(datas);
-    return res;
+    const point = new PointSchema({
+      Datas: res,
+    });
+    return await point.save();
   } catch (err) {
     console.log('getPointResult error', err);
   }
 };
 
+const getPointResultFromDB = async (date) => {
+  try {
+    if (date === '-1') return await PointSchema.findOne().sort({ _id: -1 });
+    else return await PointSchema.find({ date: { $gte: date } });
+  } catch (err) {
+    console.log('getPointResultFromDB ERROR:', err);
+  }
+};
+
 module.exports = {
   getPointResult,
+  getPointResultFromDB,
 };

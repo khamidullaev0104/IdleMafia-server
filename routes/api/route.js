@@ -1,17 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const { check, validationResult } = require('express-validator');
-
-const { getLevelResult } = require('../../controller/level');
-const { getPointResult } = require('../../controller/point');
 const { getTotalDefense,getTotalAttack } = require('../../models/defense');
 
 const {
+  getLevelResult,
+  getLevelResultFromDB,
+} = require('../../controller/level');
+const {
+  getPointResult,
+  getPointResultFromDB,
+} = require('../../controller/point');
+const {
   getAttackResult,
+  getAttackResultFromDB,
   loadAttackResult,
 } = require('../../controller/attack');
 const {
   getBuildingResult,
+  getBuildingResultFromDB,
   loadBuildingResult,
 } = require('../../controller/building');
 
@@ -19,8 +26,11 @@ const sendMessageToChannel = require('../../common/sendMessage');
 const getChannelID = require('../../common/getChannelID');
 const login = require('../../common/login');
 const register = require('../../common/register');
-const { getUserInfoById } = require('../../common/other');
-
+const {
+  getUserInfoById,
+  getTotalNumberOfGangMember,
+  memberRankByFP,
+} = require('../../common/other');
 const { CHANNEL_ID, BOTFATHER_ID, TOKEN } = require('../../config/constants');
 
 //////////////////////////////////////// Functions ////////////////////////////////////////
@@ -33,8 +43,6 @@ function errorResponse(res, message, error) {
   console.log(error);
   return res.status(200).json({ status: false, message, err: error });
 }
-
-///////////////////////////////////////// POST requests ////////////////////////////////////////
 
 router.post(
   '/login',
@@ -122,8 +130,7 @@ router.post(
   }
 );
 
-///////////////////////////////////////////////////////////////GET requests /////////////////////////
-router.get('/createMessage', async (req, res) => {
+router.post('/createMessage', async (req, res) => {
   const { message } = req.body;
   console.log('createMessage function excution');
   try {
@@ -158,7 +165,22 @@ router.get('/createMessage', async (req, res) => {
   }
 });
 
-router.get('/getLevel', async (req, res) => {
+
+
+router.post('/sendMessageOnly', async (req, res) => {
+  try {
+    const { message } = req.body;
+    await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, message);
+    return res.status(200).json({ status: true, message: 'Success' });
+  } catch (err) {
+    console.log(err);
+    return res
+        .status(200)
+        .json({ status: false, message: 'sendMessageOnly error', err });
+  }
+});
+
+router.post('/getLevel', async (req, res) => {
   try {
     await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, 'level');
     await new Promise((r) => setTimeout(r, 300));
@@ -173,7 +195,7 @@ router.get('/getLevel', async (req, res) => {
   }
 });
 
-router.get('/getLevelWithoutSend', async (req, res) => {
+router.post('/getLevelWithoutSend', async (req, res) => {
   try {
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     const data = await getLevelResult(TOKEN, BotfatherChannelId);
@@ -186,20 +208,7 @@ router.get('/getLevelWithoutSend', async (req, res) => {
   }
 });
 
-router.get('/sendMessageOnly', async (req, res) => {
-  try {
-    const { message } = req.body;
-    await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, message);
-    return res.status(200).json({ status: true, message: 'Success' });
-  } catch (err) {
-    console.log(err);
-    return res
-      .status(200)
-      .json({ status: false, message: 'getBuilding error', err });
-  }
-});
-
-router.get('/getPoint', async (req, res) => {
+router.post('/getPoint', async (req, res) => {
   try {
     await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, 'point');
     await new Promise((r) => setTimeout(r, 300));
@@ -214,7 +223,7 @@ router.get('/getPoint', async (req, res) => {
   }
 });
 
-router.get('/getPointWithoutSend', async (req, res) => {
+router.post('/getPointWithoutSend', async (req, res) => {
   try {
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     const data = await getPointResult(TOKEN, BotfatherChannelId);
@@ -227,7 +236,7 @@ router.get('/getPointWithoutSend', async (req, res) => {
   }
 });
 
-router.get('/getAttack', async (req, res) => {
+router.post('/getAttack', async (req, res) => {
   try {
     await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, 'attack');
     await new Promise((r) => setTimeout(r, 300));
@@ -241,7 +250,6 @@ router.get('/getAttack', async (req, res) => {
       .json({ status: false, message: 'getAttack error', err });
   }
 });
-
 router.get('/attack', async (req, res) => {
   try {
     const data = await loadAttackResult();
@@ -252,7 +260,7 @@ router.get('/attack', async (req, res) => {
   }
 });
 
-router.get('/getAttackWithoutSend', async (req, res) => {
+router.post('/getAttackWithoutSend', async (req, res) => {
   try {
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     const data = await getAttackResult(TOKEN, BotfatherChannelId);
@@ -265,7 +273,7 @@ router.get('/getAttackWithoutSend', async (req, res) => {
   }
 });
 
-router.get('/getBuilding', async (req, res) => {
+router.post('/getBuilding', async (req, res) => {
   try {
     await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, 'building');
     await new Promise((r) => setTimeout(r, 300));
@@ -280,17 +288,7 @@ router.get('/getBuilding', async (req, res) => {
   }
 });
 
-router.get('/building', async (req, res) => {
-  try {
-    const data = await loadBuildingResult();
-    return successResponse(res, data);
-  } catch (err) {
-    console.log(err);
-    return errorResponse(res, 'loadBuilding error', err);
-  }
-});
-
-router.get('/getBuildingWithoutSend', async (req, res) => {
+router.post('/getBuildingWithoutSend', async (req, res) => {
   try {
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     const data = await getBuildingResult(TOKEN, BotfatherChannelId);
@@ -302,6 +300,143 @@ router.get('/getBuildingWithoutSend', async (req, res) => {
       .json({ status: false, message: 'getBuilding error', err });
   }
 });
+
+router.post('/getLevelResultFromDB', async (req, res) => {
+  try {
+    const { date } = req.body;
+    const data = await getLevelResultFromDB(date);
+    if (data === null || (Array.isArray(data) === true && data.length === 0))
+      return res.status(200).json({
+        status: false,
+        message: 'Empty DB for Level Result',
+      });
+    return res.status(200).json({ status: true, message: 'Success', data });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(200)
+      .json({ status: false, message: 'getLevelResultFromDB error', err });
+  }
+});
+
+router.post('/getPointResultFromDB', async (req, res) => {
+  try {
+    const { date } = req.body;
+    const data = await getPointResultFromDB(date);
+    if (data === null || (Array.isArray(data) === true && data.length === 0))
+      return res.status(200).json({
+        status: false,
+        message: 'Empty DB for Point Result',
+      });
+    return res.status(200).json({ status: true, message: 'Success', data });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(200)
+      .json({ status: false, message: 'getPointResultFromDB error', err });
+  }
+});
+
+router.post('/getAttackResultFromDB', async (req, res) => {
+  try {
+    const { date } = req.body;
+    const data = await getAttackResultFromDB(date);
+    if (data === null || (Array.isArray(data) === true && data.length === 0))
+      return res.status(200).json({
+        status: false,
+        message: 'Empty DB for Attack Result',
+      });
+    return res.status(200).json({ status: true, message: 'Success', data });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(200)
+      .json({ status: false, message: 'getAttackResultFromDB error', err });
+  }
+});
+
+router.post('/getBuildingResultFromDB', async (req, res) => {
+  try {
+    const { date } = req.body;
+    const data = await getBuildingResultFromDB(date);
+    if (data === null || (Array.isArray(data) === true && data.length === 0))
+      return res.status(200).json({
+        status: false,
+        message: 'Empty DB for Building Result',
+      });
+    return res.status(200).json({ status: true, message: 'Success', data });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(200)
+      .json({ status: false, message: 'getBuildingResultFromDB error', err });
+  }
+});
+
+router.post('/getTotalMembers', async (req, res) => {
+  try {
+    const data = await getTotalNumberOfGangMember();
+    if (data === null)
+      return res.status(200).json({ status: false, message: 'Empty DB' });
+    return res
+      .status(200)
+      .json({ status: true, message: 'Success', data: data.Datas.length });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(200)
+      .json({ status: false, message: 'getTotalMembers error', err });
+  }
+});
+
+router.post('/getRankByFP', async (req, res) => {
+  try {
+    const data = await memberRankByFP();
+    if (data === null || data.length === 0)
+      return res.status(200).json({ status: false, message: 'Empty DB' });
+    return res
+      .status(200)
+      .json({ status: true, message: 'Success', data: data.Datas });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(200)
+      .json({ status: false, message: 'getRankByFP error', err });
+  }
+});
+
+router.post('/getTotalMembers', async (req, res) => {
+  try {
+    const data = await getTotalNumberOfGangMember();
+    if (data === null)
+      return res.status(200).json({ status: false, message: 'Empty DB' });
+    return res
+        .status(200)
+        .json({ status: true, message: 'Success', data: data.Datas.length });
+  } catch (err) {
+    console.log(err);
+    return res
+        .status(200)
+        .json({ status: false, message: 'getTotalMembers error', err });
+  }
+});
+
+router.post('/getRankByFP', async (req, res) => {
+  try {
+    const data = await memberRankByFP();
+    if (data === null || data.length === 0)
+      return res.status(200).json({ status: false, message: 'Empty DB' });
+    return res
+        .status(200)
+        .json({ status: true, message: 'Success', data: data.Datas });
+  } catch (err) {
+    console.log(err);
+    return res
+        .status(200)
+        .json({ status: false, message: 'getRankByFP error', err });
+  }
+});
+
 
 router.get('/defense/total', async (req, res) => {
   try {
@@ -317,6 +452,28 @@ router.get('/attack/total', async (req, res) => {
     return successResponse(res, data);
   } catch (err) {
     return errorResponse(res, 'Failed to get total attack', err)
+  }
+});
+router.get('/getBuildingWithoutSend', async (req, res) => {
+  try {
+    const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
+    const data = await getBuildingResult(TOKEN, BotfatherChannelId);
+    return res.status(200).json({ status: true, message: 'Success', data });
+  } catch (err) {
+    console.log(err);
+    return res
+        .status(200)
+        .json({ status: false, message: 'getBuilding error', err });
+  }
+});
+
+router.get('/building', async (req, res) => {
+  try {
+    const data = await loadBuildingResult();
+    return successResponse(res, data);
+  } catch (err) {
+    console.log(err);
+    return errorResponse(res, 'loadBuilding error', err);
   }
 });
 module.exports = router;
