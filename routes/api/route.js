@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { check, validationResult } = require('express-validator');
 const { getTotalDefense,getTotalAttack } = require('../../models/defense');
-
+const { axiosPostToChannel } = require('../../common/axiosFunctions');
 const {
   getLevelResult,
   getLevelResultFromDB,
@@ -238,7 +238,8 @@ router.post('/getPointWithoutSend', async (req, res) => {
 
 router.post('/getAttack', async (req, res) => {
   try {
-    await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, 'attack');
+    await axiosPostToChannel('messages', CHANNEL_ID, 'attack');
+
     await new Promise((r) => setTimeout(r, 300));
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     const data = await getAttackResult(TOKEN, BotfatherChannelId);
