@@ -31,6 +31,10 @@ jobs:
 
       - name: test getAttack
         run: curl --location --request POST 'http:/127.0.0.1:5000/getAttack' --silent -v 2>&1 | grep 'HTTP/1.1 200'
+      - name: test defense/total
+        run: curl --location '127.0.0.1:5000/defense/total' --silent -v 2>&1 | grep 'HTTP/1.1 200'
+      - name: test attack/total
+        run: curl --location '127.0.0.1:5000/attack/total' --silent -v 2>&1 | grep 'HTTP/1.1 200'
 
       - name: Stop server
         run: pm2 delete all
