@@ -26,9 +26,13 @@ jobs:
         run: npm run lint
       - name: Run server
         run: pm2 start npm -- start
+      - name: Wait
+        run: sleep 5
 
       - name: test getAttack
         run: curl --location 'http://localhost:5000/getAttack'
 
       - name: Stop server
         run: pm2 delete all
+      - name: Logs
+        run:  cat ~/.pm2/pm2.log
