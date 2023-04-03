@@ -6,12 +6,18 @@ jobs:
     strategy:
       matrix:
         version: [16,18]
+        mongodb-version: ['4.2', '4.4', '5.0', '6.0']        
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.version }}
+      - name: Start MongoDB
+      - uses: supercharge/mongodb-github-action@1.8.0
+        with:
+          node-version: ${{ matrix.mongodb-version }}
+
       - name: Install deps
         run: npm i
       - name: Lint
