@@ -30,7 +30,7 @@ jobs:
         run: sleep 5
 
       - name: test getAttack
-        run: curl --location 'http:/127.0.0.1:5000/getAttack' --silent -v 2>&1 | grep 'HTTP/1.1 200'
+        run: curl --location --request POST 'http:/127.0.0.1:5000/getAttack' --silent -v 2>&1 | grep 'HTTP/1.1 200'
 
       - name: Stop server
         run: pm2 delete all
