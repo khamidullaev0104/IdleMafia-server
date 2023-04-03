@@ -19,6 +19,8 @@ jobs:
 
       - name: Install deps
         run: npm i
+      - name: Install pm2
+        run: npm i -g pm2
       - name: Lint
         run: npm run lint
       - name: Run server
