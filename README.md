@@ -18,3 +18,17 @@ To start dev server call start command
 npm run start
 ``
 
+### Checks
+To check code by eslint 
+
+``
+npm run lint
+``
+
+To reformat code 
+
+``
+npm run format
+``
+
+
