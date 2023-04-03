@@ -27,7 +27,7 @@ jobs:
         run: pm2 start npm -- start
 
       - name: test getAttack
-        run: curl --location '127.0.0.1:5000/getAttack'
+        run: curl --location 'http://localhost:5000/getAttack'
 
       - name: Stop server
         run: pm2 delete all
