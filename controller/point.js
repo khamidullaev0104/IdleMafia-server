@@ -26,11 +26,7 @@ const getPointResult = async (token, BotfatherChannelId) => {
       )
         break;
     }
-    const res = await pointParseModule(datas);
-    const point = new PointSchema({
-      Datas: res,
-    });
-    return await point.save();
+    return await pointParseModule(datas);
   } catch (err) {
     console.log('getPointResult error', err);
   }
