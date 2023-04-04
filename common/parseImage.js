@@ -156,4 +156,4 @@ async function getLevelCommand(dirName, index, imgURL) {
   }
 }
 
-module.exports = getLevelCommand; 
+module.exports = getLevelCommand;

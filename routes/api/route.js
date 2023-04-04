@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { check, validationResult } = require('express-validator');
-const { getTotalDefense,getTotalAttack } = require('../../models/defense');
+const { getTotalDefense, getTotalAttack } = require('../../models/defense');
 const { axiosPostToChannel } = require('../../common/axiosFunctions');
 const {
   getLevelResult,
@@ -166,8 +166,6 @@ router.post('/createMessage', async (req, res) => {
   }
 });
 
-
-
 router.post('/sendMessageOnly', async (req, res) => {
   try {
     const { message } = req.body;
@@ -176,8 +174,8 @@ router.post('/sendMessageOnly', async (req, res) => {
   } catch (err) {
     console.log(err);
     return res
-        .status(200)
-        .json({ status: false, message: 'sendMessageOnly error', err });
+      .status(200)
+      .json({ status: false, message: 'sendMessageOnly error', err });
   }
 });
 
@@ -413,13 +411,13 @@ router.post('/getTotalMembers', async (req, res) => {
     if (data === null)
       return res.status(200).json({ status: false, message: 'Empty DB' });
     return res
-        .status(200)
-        .json({ status: true, message: 'Success', data: data.Datas.length });
+      .status(200)
+      .json({ status: true, message: 'Success', data: data.Datas.length });
   } catch (err) {
     console.log(err);
     return res
-        .status(200)
-        .json({ status: false, message: 'getTotalMembers error', err });
+      .status(200)
+      .json({ status: false, message: 'getTotalMembers error', err });
   }
 });
 
@@ -429,23 +427,22 @@ router.post('/getRankByFP', async (req, res) => {
     if (data === null || data.length === 0)
       return res.status(200).json({ status: false, message: 'Empty DB' });
     return res
-        .status(200)
-        .json({ status: true, message: 'Success', data: data.Datas });
+      .status(200)
+      .json({ status: true, message: 'Success', data: data.Datas });
   } catch (err) {
     console.log(err);
     return res
-        .status(200)
-        .json({ status: false, message: 'getRankByFP error', err });
+      .status(200)
+      .json({ status: false, message: 'getRankByFP error', err });
   }
 });
-
 
 router.get('/defense/total', async (req, res) => {
   try {
     const data = await getTotalDefense();
     return successResponse(res, data);
   } catch (err) {
-    return errorResponse(res, 'Failed to get total defense', err)
+    return errorResponse(res, 'Failed to get total defense', err);
   }
 });
 router.get('/attack/total', async (req, res) => {
@@ -453,7 +450,7 @@ router.get('/attack/total', async (req, res) => {
     const data = await getTotalAttack();
     return successResponse(res, data);
   } catch (err) {
-    return errorResponse(res, 'Failed to get total attack', err)
+    return errorResponse(res, 'Failed to get total attack', err);
   }
 });
 router.get('/getBuildingWithoutSend', async (req, res) => {
@@ -464,8 +461,8 @@ router.get('/getBuildingWithoutSend', async (req, res) => {
   } catch (err) {
     console.log(err);
     return res
-        .status(200)
-        .json({ status: false, message: 'getBuilding error', err });
+      .status(200)
+      .json({ status: false, message: 'getBuilding error', err });
   }
 });
 
@@ -484,7 +481,7 @@ router.get('/timeUntilGW', async (req, res) => {
     const data = await getTimeUntilGW();
     return successResponse(res, data);
   } catch (err) {
-    return errorResponse(res, 'Failed to get time until GW', err)
+    return errorResponse(res, 'Failed to get time until GW', err);
   }
 });
 

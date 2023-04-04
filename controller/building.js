@@ -39,4 +39,4 @@ const getBuildingResultFromDB = async (date) => {
 module.exports = {
   getBuildingResult,
   getBuildingResultFromDB,
-}; 
+};

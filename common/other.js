@@ -65,7 +65,7 @@ async function getTimeUntilGW() {
 
     let targetDate;
     let curDay = tDate.getUTCDay();
-    if(curDay > 4) targetDate = tDate.getDate() + 7 - curDay + 4;
+    if (curDay > 4) targetDate = tDate.getDate() + 7 - curDay + 4;
     else targetDate = tDate.getDate() + 4 - curDay;
 
     tDate.setUTCSeconds(0);
@@ -76,10 +76,10 @@ async function getTimeUntilGW() {
     const diffTime = (tDate.getTime() - cDate.getTime()) / 1000;
 
     const res = {
-      days: Math.floor((diffTime/(3600*24)) % 31),
-      hours:	Math.floor((diffTime/3600) % 24),
-      minutes: Math.floor((diffTime/60) % 60),
-      seconds: diffTime % 60
+      days: Math.floor((diffTime / (3600 * 24)) % 31),
+      hours: Math.floor((diffTime / 3600) % 24),
+      minutes: Math.floor((diffTime / 60) % 60),
+      seconds: diffTime % 60,
     };
     return res;
   } catch (err) {
