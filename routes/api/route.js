@@ -393,15 +393,11 @@ router.post('/getRankByFP', async (req, res) => {
   try {
     const data = await memberRankByFP();
     if (data === null || data.length === 0)
-      return res.status(200).json({ status: false, message: 'Empty DB' });
-    return res
-      .status(200)
-      .json({ status: true, message: 'Success', data: data.Datas });
+      return errorResponse(res, 'Empty DB', null);
+    return successResponse(res, data.Datas);
   } catch (err) {
     console.log(err);
-    return res
-      .status(200)
-      .json({ status: false, message: 'getRankByFP error', err });
+    return errorResponse(res, 'getRankByFP error', err);
   }
 });
 
@@ -418,22 +414,6 @@ router.post('/getTotalMembers', async (req, res) => {
     return res
       .status(200)
       .json({ status: false, message: 'getTotalMembers error', err });
-  }
-});
-
-router.post('/getRankByFP', async (req, res) => {
-  try {
-    const data = await memberRankByFP();
-    if (data === null || data.length === 0)
-      return res.status(200).json({ status: false, message: 'Empty DB' });
-    return res
-      .status(200)
-      .json({ status: true, message: 'Success', data: data.Datas });
-  } catch (err) {
-    console.log(err);
-    return res
-      .status(200)
-      .json({ status: false, message: 'getRankByFP error', err });
   }
 });
 

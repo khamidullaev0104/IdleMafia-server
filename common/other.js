@@ -46,12 +46,38 @@ async function getTotalNumberOfGangMember() {
   }
 }
 
+function parseTFP(str) {
+  let fp = Number.parseFloat(str);
+  var strFP = fp.toString();
+  var unit = str.slice(str.indexOf(strFP) + strFP.length, str.length);
+  const FP_UNIT = new Map([
+    ['', 0],
+    ['.', 0],
+    ['K', 1],
+    ['.K', 1],
+    ['M', 2],
+    ['.M', 2],
+    ['B', 3],
+    ['.B', 3],
+  ]);
+  return { fp, unit: FP_UNIT.get(unit) };
+}
+
 async function memberRankByFP() {
   try {
     const res = await LevelSchema.findOne().sort({ _id: -1 });
-    console.log(res);
     if (res === null) return res;
-    res.Datas.sort((a, b) => (a.tfp > b.tfp ? 1 : b.tfp > a.tfp ? -1 : 0));
+
+    res.Datas.sort((a, b) => {
+      const aTFP = parseTFP(a.tfp.replace(' ', ''));
+      const bTFP = parseTFP(b.tfp.replace(' ', ''));
+      console.log(aTFP, bTFP);
+      if (aTFP.unit === bTFP.unit) {
+        return aTFP.fp - bTFP.fp;
+      } else {
+        return aTFP.unit - bTFP.unit;
+      }
+    });
     return res;
   } catch (err) {
     console.error('memberRankByFP error: ', err.message);

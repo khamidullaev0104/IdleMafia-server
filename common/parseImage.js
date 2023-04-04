@@ -83,7 +83,7 @@ async function getGangMembersFromImage(indIMG, indMember, imgURL) {
         DIR_PATH + indIMG + '-' + indMember + '-' + ind + '-' + 'member-fp.png',
         'eng'
       );
-      member.fp = ret.data.text.trim();
+      member.fp = ret.data.text.trim().replace(' ', '');
       members.push(member);
     }
     return members;
@@ -104,7 +104,7 @@ async function getTotalFPFromImage(indIMG, indMember, imgURL) {
       DIR_PATH + indIMG + '-' + indMember + '-' + 'FP.png',
       'eng'
     );
-    return ret.data.text.replace('Total:', '').trim();
+    return ret.data.text.replace('Total:', '').trim().replace(' ', '');
   } catch (error) {
     console.log('parseImage.getTotalFPFromImage error', error);
   }
