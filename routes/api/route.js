@@ -30,6 +30,7 @@ const {
   getUserInfoById,
   getTotalNumberOfGangMember,
   memberRankByFP,
+  getTimeUntilGW,
 } = require('../../common/other');
 const { CHANNEL_ID, BOTFATHER_ID, TOKEN } = require('../../config/constants');
 
@@ -477,4 +478,14 @@ router.get('/building', async (req, res) => {
     return errorResponse(res, 'loadBuilding error', err);
   }
 });
+
+router.get('/timeUntilGW', async (req, res) => {
+  try {
+    const data = await getTimeUntilGW();
+    return successResponse(res, data);
+  } catch (err) {
+    return errorResponse(res, 'Failed to get time until GW', err)
+  }
+});
+
 module.exports = router;
