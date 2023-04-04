@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { check, validationResult } = require('express-validator');
-const { getTotalDefense, getTotalAttack } = require('../../models/defense');
+const { getTotalDefense, getTotalAttack } = require('../../common/defense');
 const { axiosPostToChannel } = require('../../common/axiosFunctions');
 const {
   getLevelResult,

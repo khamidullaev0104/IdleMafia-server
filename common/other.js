@@ -71,11 +71,10 @@ async function memberRankByFP() {
     res.Datas.sort((a, b) => {
       const aTFP = parseTFP(a.tfp.replace(' ', ''));
       const bTFP = parseTFP(b.tfp.replace(' ', ''));
-      console.log(aTFP, bTFP);
       if (aTFP.unit === bTFP.unit) {
-        return aTFP.fp - bTFP.fp;
+        return bTFP.fp - aTFP.fp;
       } else {
-        return aTFP.unit - bTFP.unit;
+        return bTFP.unit - aTFP.unit;
       }
     });
     return res;

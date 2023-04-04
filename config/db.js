@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
-const { MONGO_ATALAS_URL } = require('./constants');
+const { MONGO_URL } = require('./constants');
 
 const connectDB = () => {
   mongoose
-    .connect(MONGO_ATALAS_URL, {
+    .connect(MONGO_URL, {
       useNewUrlParser: true,
       useCreateIndex: true,
       useFindAndModify: false,
