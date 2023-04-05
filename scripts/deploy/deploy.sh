@@ -22,6 +22,11 @@ function install_modules {
   $NPM_BIN i
 }
 
+function check_node_status {
+  print_info "Checking node status..."
+  pm2 ls
+}
+
 function deploy_server {
   print_title "Deploying server..."
 
@@ -54,3 +59,4 @@ function deploy_client {
 
 deploy_server
 deploy_client
+check_node_status
