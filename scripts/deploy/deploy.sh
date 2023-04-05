@@ -45,6 +45,8 @@ function deploy_client {
   update_src
   print_info "Installing modules..."
   install_modules
+  print_info "Removing previous application version..."
+  rm -rf build
   print_info "Building application..."
   $NPM_BIN run build
   print_title "Client deployed successfully"
