@@ -41,7 +41,9 @@ function successResponse(res, data) {
 }
 
 function errorResponse(res, message, error) {
-  console.log(error);
+  if (error) {
+    console.log(error);
+  }
   return res.status(200).json({ status: false, message, err: error });
 }
 
