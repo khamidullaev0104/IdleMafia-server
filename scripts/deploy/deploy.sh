@@ -18,12 +18,18 @@ function update_src {
   git pull --quiet origin main
 }
 
+function install_modules {
+  $NPM_BIN i
+}
+
 function deploy_server {
   print_title "Deploying server..."
 
   cd "$SERVER_DIR"
   print_info "Updating sources..."
   update_src
+  print_info "Installing modules..."
+  install_modules
   print_info "Node process restarting..."
   PM2_PROCESS_NAME="localhost:4000"
   pm2 delete "$PM2_PROCESS_NAME"
@@ -37,6 +43,8 @@ function deploy_client {
   cd "$CLIENT_DIR"
   print_info "Updating sources..."
   update_src
+  print_info "Installing modules..."
+  install_modules
   print_info "Building application..."
   $NPM_BIN run build
   print_title "Client deployed successfully"
