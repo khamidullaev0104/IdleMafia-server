@@ -1,6 +1,7 @@
 const axios = require('axios');
 const { pointParseModule } = require('../common/parse');
 const PointSchema = require('../models/Schemas/PointSchema');
+const { END_OF_POINT_LOOP } = require('../config/string');
 
 const getPointResult = async (token, BotfatherChannelId) => {
   try {
@@ -20,9 +21,7 @@ const getPointResult = async (token, BotfatherChannelId) => {
       datas.push(...res_msg.data[i].embeds[0].fields);
       if (
         typeof res_msg.data[i].embeds[0].description !== 'undefined' &&
-        res_msg.data[i].embeds[0].description.includes(
-          'Gang points, Nemesis attack damages'
-        )
+        res_msg.data[i].embeds[0].description.includes(END_OF_POINT_LOOP)
       )
         break;
     }

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { check, validationResult } = require('express-validator');
 const { getTotalDefense, getTotalAttack } = require('../../common/defense');
-const { axiosPostToChannel } = require('../../common/axiosFunctions');
+const { OFF_SEASON } = require('../../config/string');
 const {
   getLevelResult,
   getLevelResultFromDB,
@@ -34,6 +34,7 @@ const {
   getTimeUntilGW,
 } = require('../../common/other');
 const { CHANNEL_ID, BOTFATHER_ID, TOKEN } = require('../../config/constants');
+const CapoSchema = require("../../models/Schemas/CapoSchema");
 
 //////////////////////////////////////// Functions ////////////////////////////////////////
 
@@ -187,7 +188,17 @@ router.post('/getLevel', async (req, res) => {
     await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, 'level');
     await new Promise((r) => setTimeout(r, 300));
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
+    if (BotfatherChannelId === undefined)
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not get channel ID',
+      });
     const data = await getLevelResult(TOKEN, BotfatherChannelId);
+    if (data === null || data === undefined)
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not access in DM',
+      });
     return res.status(200).json({ status: true, message: 'Success', data });
   } catch (err) {
     console.log(err);
@@ -200,7 +211,17 @@ router.post('/getLevel', async (req, res) => {
 router.post('/getLevelWithoutSend', async (req, res) => {
   try {
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
+    if (BotfatherChannelId === undefined)
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not get channel ID',
+      });
     const data = await getLevelResult(TOKEN, BotfatherChannelId);
+    if (data === null || data === undefined)
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not access in DM',
+      });
     return res.status(200).json({ status: true, message: 'Success', data });
   } catch (err) {
     console.log(err);
@@ -215,7 +236,17 @@ router.post('/getPoint', async (req, res) => {
     await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, 'point');
     await new Promise((r) => setTimeout(r, 300));
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
+    if (BotfatherChannelId === undefined)
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not get channel ID',
+      });
     const data = await getPointResult(TOKEN, BotfatherChannelId);
+    if (data === null || data === undefined)
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not access in DM',
+      });
     return res.status(200).json({ status: true, message: 'Success', data });
   } catch (err) {
     console.log(err);
@@ -228,7 +259,17 @@ router.post('/getPoint', async (req, res) => {
 router.post('/getPointWithoutSend', async (req, res) => {
   try {
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
+    if (BotfatherChannelId === undefined)
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not get channel ID',
+      });
     const data = await getPointResult(TOKEN, BotfatherChannelId);
+    if (data === null || data === undefined)
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not access in DM',
+      });
     return res.status(200).json({ status: true, message: 'Success', data });
   } catch (err) {
     console.log(err);
@@ -240,11 +281,24 @@ router.post('/getPointWithoutSend', async (req, res) => {
 
 router.post('/getAttack', async (req, res) => {
   try {
-    await axiosPostToChannel('messages', CHANNEL_ID, 'attack');
-
+    await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, 'attack');
     await new Promise((r) => setTimeout(r, 300));
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
+    if (BotfatherChannelId === undefined)
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not get channel ID',
+      });
     const data = await getAttackResult(TOKEN, BotfatherChannelId);
+    if (data === null || data === undefined)
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not access in DM',
+      });
+    if (data === OFF_SEASON)
+      return res
+        .status(200)
+        .json({ status: false, message: 'Not in GW. ' + OFF_SEASON });
     return res.status(200).json({ status: true, message: 'Success', data });
   } catch (err) {
     console.log(err);
@@ -253,9 +307,12 @@ router.post('/getAttack', async (req, res) => {
       .json({ status: false, message: 'getAttack error', err });
   }
 });
+
 router.get('/attack', async (req, res) => {
   try {
     const data = await loadAttackResult();
+    if (data === null || data === undefined)
+      return errorResponse(res, 'loadAttack error', null);
     return successResponse(res, data);
   } catch (err) {
     console.log(err);
@@ -266,7 +323,21 @@ router.get('/attack', async (req, res) => {
 router.post('/getAttackWithoutSend', async (req, res) => {
   try {
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
+    if (BotfatherChannelId === undefined)
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not get channel ID',
+      });
     const data = await getAttackResult(TOKEN, BotfatherChannelId);
+    if (data === null || data === undefined)
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not access in DM',
+      });
+    if (data === OFF_SEASON)
+      return res
+        .status(200)
+        .json({ status: false, message: 'Not in GW. ' + OFF_SEASON });
     return res.status(200).json({ status: true, message: 'Success', data });
   } catch (err) {
     console.log(err);
@@ -281,7 +352,21 @@ router.post('/getBuilding', async (req, res) => {
     await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, 'building');
     await new Promise((r) => setTimeout(r, 300));
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
+    if (BotfatherChannelId === undefined)
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not get channel ID',
+      });
     const data = await getBuildingResult(TOKEN, BotfatherChannelId);
+    if (data === null || data === undefined)
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not access in DM',
+      });
+    if (data === OFF_SEASON)
+      return res
+        .status(200)
+        .json({ status: false, message: 'Not in GW. ' + OFF_SEASON });
     return res.status(200).json({ status: true, message: 'Success', data });
   } catch (err) {
     console.log(err);
@@ -294,7 +379,21 @@ router.post('/getBuilding', async (req, res) => {
 router.post('/getBuildingWithoutSend', async (req, res) => {
   try {
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
+    if (BotfatherChannelId === undefined)
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not get channel ID',
+      });
     const data = await getBuildingResult(TOKEN, BotfatherChannelId);
+    if (data === null || data === undefined)
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not access in DM',
+      });
+    if (data === OFF_SEASON)
+      return res
+        .status(200)
+        .json({ status: false, message: 'Not in GW. ' + OFF_SEASON });
     return res.status(200).json({ status: true, message: 'Success', data });
   } catch (err) {
     console.log(err);
@@ -308,7 +407,11 @@ router.post('/getLevelResultFromDB', async (req, res) => {
   try {
     const { date } = req.body;
     const data = await getLevelResultFromDB(date);
-    if (data === null || (Array.isArray(data) === true && data.length === 0))
+    if (
+      data === null ||
+      data === undefined ||
+      (Array.isArray(data) === true && data.length === 0)
+    )
       return res.status(200).json({
         status: false,
         message: 'Empty DB for Level Result',
@@ -326,7 +429,11 @@ router.post('/getPointResultFromDB', async (req, res) => {
   try {
     const { date } = req.body;
     const data = await getPointResultFromDB(date);
-    if (data === null || (Array.isArray(data) === true && data.length === 0))
+    if (
+      data === null ||
+      data === undefined ||
+      (Array.isArray(data) === true && data.length === 0)
+    )
       return res.status(200).json({
         status: false,
         message: 'Empty DB for Point Result',
@@ -344,7 +451,11 @@ router.post('/getAttackResultFromDB', async (req, res) => {
   try {
     const { date } = req.body;
     const data = await getAttackResultFromDB(date);
-    if (data === null || (Array.isArray(data) === true && data.length === 0))
+    if (
+      data === null ||
+      data === undefined ||
+      (Array.isArray(data) === true && data.length === 0)
+    )
       return res.status(200).json({
         status: false,
         message: 'Empty DB for Attack Result',
@@ -362,7 +473,11 @@ router.post('/getBuildingResultFromDB', async (req, res) => {
   try {
     const { date } = req.body;
     const data = await getBuildingResultFromDB(date);
-    if (data === null || (Array.isArray(data) === true && data.length === 0))
+    if (
+      data === null ||
+      data === undefined ||
+      (Array.isArray(data) === true && data.length === 0)
+    )
       return res.status(200).json({
         status: false,
         message: 'Empty DB for Building Result',
@@ -379,7 +494,7 @@ router.post('/getBuildingResultFromDB', async (req, res) => {
 router.post('/getTotalMembers', async (req, res) => {
   try {
     const data = await getTotalNumberOfGangMember();
-    if (data === null)
+    if (data === null || data === undefined)
       return res.status(200).json({ status: false, message: 'Empty DB' });
     return res
       .status(200)
@@ -407,7 +522,7 @@ router.post('/getRankByFP', async (req, res) => {
 router.post('/getTotalMembers', async (req, res) => {
   try {
     const data = await getTotalNumberOfGangMember();
-    if (data === null)
+    if (data === null || data === undefined)
       return res.status(200).json({ status: false, message: 'Empty DB' });
     return res
       .status(200)
@@ -434,18 +549,6 @@ router.get('/attack/total', async (req, res) => {
     return successResponse(res, data);
   } catch (err) {
     return errorResponse(res, 'Failed to get total attack', err);
-  }
-});
-router.get('/getBuildingWithoutSend', async (req, res) => {
-  try {
-    const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
-    const data = await getBuildingResult(TOKEN, BotfatherChannelId);
-    return res.status(200).json({ status: true, message: 'Success', data });
-  } catch (err) {
-    console.log(err);
-    return res
-      .status(200)
-      .json({ status: false, message: 'getBuilding error', err });
   }
 });
 
@@ -478,5 +581,53 @@ router.get('/getBuildingInfo', async (req, res) => {
     return errorResponse(res, 'Failed to get time until GW', err);
   }
 });
+
+router.get('/capos', async (req, res) => {
+  try {
+    const data = await CapoSchema.find({});
+    return successResponse(res, data);
+  } catch (err) {
+    return errorResponse(res, 'Failed to get capos', err)
+  }
+});
+
+router.post('/capos/delete',
+    check('id', 'capo id is required').notEmpty(),
+    async (req, res) => {
+
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return errorResponse(res, 'Failed to delete capo', errors)
+      }
+
+      const {id} = req.body;
+      try {
+        await CapoSchema.findByIdAndDelete(id);
+        return successResponse(res);
+      } catch (err) {
+        return errorResponse(res, 'Failed to delete capo', err)
+      }
+    });
+
+router.post('/capos/update',
+    check('id', 'capo id is required').notEmpty(),
+    check('name', 'capo id is required').notEmpty(),
+    async (req, res) => {
+
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return errorResponse(res, 'Failed to update capo', errors)
+      }
+
+      const {id,name} = req.body;
+      try {
+        await CapoSchema.findByIdAndUpdate(id,{Name:name});
+
+        return successResponse(res);
+      } catch (err) {
+        return errorResponse(res, 'Failed to update capo', err)
+      }
+    });
+
 
 module.exports = router;
