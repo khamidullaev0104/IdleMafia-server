@@ -92,7 +92,7 @@ async function getTimeUntilGW() {
     let curDay = tDate.getUTCDay();
     if (curDay >= 4) targetDate = tDate.getUTCDate() + 6 - curDay + 4;
     else targetDate = tDate.getUTCDate() + 4 - curDay;
- 
+
     tDate.setUTCSeconds(0);
     tDate.setUTCMinutes(0);
     tDate.setUTCHours(0);
