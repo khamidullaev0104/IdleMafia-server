@@ -1,7 +1,7 @@
 const axios = require('axios');
-
 const LevelSchema = require('../models/Schemas/LevelSchema');
 const getLevelCommand = require('../common/parseImage');
+const { END_OF_LEVEL_LOOP } = require('../config/string');
 
 const getLevelResult = async (token, BotfatherChannelId) => {
   // Get message from specific channel with limit
@@ -23,8 +23,7 @@ const getLevelResult = async (token, BotfatherChannelId) => {
     const img = res_msg.data[i].attachments[0].url;
     let dataLevel = await getLevelCommand(timeNow, i, img);
     datas.push(...dataLevel);
-    if (res_msg.data[i].content.includes('Player rank, top 5 fight power,'))
-      break;
+    if (res_msg.data[i].content.includes(END_OF_LEVEL_LOOP)) break;
   }
   const level = new LevelSchema({
     Datas: datas,

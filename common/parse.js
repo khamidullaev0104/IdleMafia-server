@@ -108,11 +108,7 @@ async function buildingParseModule(reqData) {
       datas.enemy.push({ name: element.name, status: true, team, capo, tfp });
     }
   });
-
-  const building = new Building({
-    your: datas.your,
-    enemy: datas.enemy,
-  });
+  const building = new Building({ Datas: datas });
   const res = await building.save();
   return res;
 }

@@ -1,18 +1,23 @@
 const { attackParseModule, loadAttackModule } = require('../common/parse');
-const { axiosGetChannel } = require('../common/axiosFunctions');
 const AttackSchema = require('../models/Schemas/AttackSchema');
+const axios = require('axios');
+const { OFF_SEASON, END_OF_ATTACK_LOOP } = require('../config/string');
 
-const OFF_SEASON = 'Off season';
-const END_OF_LOOP =
-  'For # of GvG attacks remaining, # of GvG defense available';
-
-const getAttackResult = async (token, ChannelId) => {
+const getAttackResult = async (token, BotfatherChannelId) => {
   try {
     let dataToParse = [];
     for (let i = 0; ; i++) {
-      let res_msg = await axiosGetChannel('messages', ChannelId, [
-        ['limit', i + 1],
-      ]);
+      let res_msg = await axios.get(
+        `https://discord.com/api/v9/channels/${BotfatherChannelId}/messages?limit=${
+          i + 1
+        }`,
+        {
+          headers: {
+            authorization: token,
+            'content-type': 'application/json',
+          },
+        }
+      );
       if (res_msg.data[i].content === OFF_SEASON) return OFF_SEASON;
 
       let embeds = res_msg.data[i].embeds[0];
@@ -20,7 +25,7 @@ const getAttackResult = async (token, ChannelId) => {
 
       if (
         typeof embeds.description !== 'undefined' &&
-        embeds.description.includes(END_OF_LOOP)
+        embeds.description.includes(END_OF_ATTACK_LOOP)
       )
         break;
     }
