@@ -117,35 +117,9 @@ async function buildingParseModule(reqData) {
   return res;
 }
 
-async function loadBuildingModule() {
-  const buildings = await Building.findOne({}).sort({ Date: -1 }).limit(1);
-  const result = {
-    you: _countBuildings(buildings.your),
-    enemy: _countBuildings(buildings.enemy),
-  };
-
-  return result;
-}
-
-function _countBuildings(buildings) {
-  const counted = buildings.reduce(
-    (result, building) => {
-      if (building.status) {
-        result.remaining += 1;
-      } else {
-        result.completed += 1;
-      }
-      return result;
-    },
-    { remaining: 0, completed: 0 }
-  );
-  return counted;
-}
-
 module.exports = {
   pointParseModule,
   attackParseModule,
   buildingParseModule,
   loadAttackModule,
-  loadBuildingModule,
 };

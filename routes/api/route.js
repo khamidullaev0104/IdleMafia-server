@@ -26,6 +26,7 @@ const sendMessageToChannel = require('../../common/sendMessage');
 const getChannelID = require('../../common/getChannelID');
 const login = require('../../common/login');
 const register = require('../../common/register');
+const { loadBuildingModule } = require('../../common/countBuildings');
 const {
   getUserInfoById,
   getTotalNumberOfGangMember,
@@ -459,6 +460,17 @@ router.get('/building', async (req, res) => {
 router.get('/timeUntilGW', async (req, res) => {
   try {
     const data = await getTimeUntilGW();
+    return successResponse(res, data);
+  } catch (err) {
+    return errorResponse(res, 'Failed to get time until GW', err);
+  }
+});
+
+router.get('/getBuildingInfo', async (req, res) => {
+  try {
+    const data = await loadBuildingModule();
+    if (data === false)
+      return errorResponse(res, 'Empty DB', 'Building collection is empty');
     return successResponse(res, data);
   } catch (err) {
     return errorResponse(res, 'Failed to get time until GW', err);
