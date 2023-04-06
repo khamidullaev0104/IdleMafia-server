@@ -27,6 +27,15 @@ function check_node_status {
   pm2 ls
 }
 
+function check_client_status {
+  print_info "Checking client status..."
+  if (( $(curl -sSIL "https://gangwarsai.solvve.com" | grep "HTTP/1.1 200" | wc -l) == 0 ));then
+    print_error "Client deployment error"
+  else
+    print_info "Client updated successfully"
+  fi
+}
+
 function deploy_server {
   print_title "Deploying server..."
 
@@ -59,4 +68,6 @@ function deploy_client {
 
 deploy_server
 deploy_client
+
 check_node_status
+check_client_status
