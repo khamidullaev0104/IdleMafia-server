@@ -24,7 +24,11 @@ function install_modules {
 
 function check_node_status {
   print_info "Checking node status..."
-  pm2 ls
+  if (( $(pm2 prettylist | grep -e "restart_time:\s*0" | wc -l) != 1 ));then 
+    print_error "Node deployment error" 
+  else 
+    print_info "Node updated successfully"
+  fi
 }
 
 function check_client_status {
