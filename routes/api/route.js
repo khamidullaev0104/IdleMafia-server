@@ -34,6 +34,7 @@ const {
   getTimeUntilGW,
 } = require('../../common/other');
 const { CHANNEL_ID, BOTFATHER_ID, TOKEN } = require('../../config/constants');
+const CapoSchema = require("../../models/Schemas/CapoSchema");
 
 //////////////////////////////////////// Functions ////////////////////////////////////////
 
@@ -580,5 +581,53 @@ router.get('/getBuildingInfo', async (req, res) => {
     return errorResponse(res, 'Failed to get time until GW', err);
   }
 });
+
+router.get('/capos', async (req, res) => {
+  try {
+    const data = await CapoSchema.find({});
+    return successResponse(res, data);
+  } catch (err) {
+    return errorResponse(res, 'Failed to get capos', err)
+  }
+});
+
+router.post('/capos/delete',
+    check('id', 'capo id is required').notEmpty(),
+    async (req, res) => {
+
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return errorResponse(res, 'Failed to delete capo', errors)
+      }
+
+      const {id} = req.body;
+      try {
+        await CapoSchema.findByIdAndDelete(id);
+        return successResponse(res);
+      } catch (err) {
+        return errorResponse(res, 'Failed to delete capo', err)
+      }
+    });
+
+router.post('/capos/update',
+    check('id', 'capo id is required').notEmpty(),
+    check('name', 'capo id is required').notEmpty(),
+    async (req, res) => {
+
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return errorResponse(res, 'Failed to update capo', errors)
+      }
+
+      const {id,name} = req.body;
+      try {
+        await CapoSchema.findByIdAndUpdate(id,{Name:name});
+
+        return successResponse(res);
+      } catch (err) {
+        return errorResponse(res, 'Failed to update capo', err)
+      }
+    });
+
 
 module.exports = router;
