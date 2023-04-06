@@ -12,7 +12,7 @@ async function get(url) {
   if (process.env.DEBUG ?? false) console.log('[axios]GET', url);
 
   return await axios.get(url, {
-    headers: headers,
+    headers: headers(),
   });
 }
 

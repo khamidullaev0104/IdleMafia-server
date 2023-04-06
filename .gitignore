@@ -18,3 +18,4 @@ config/default.json
 level-img
 client/build
 client/.eslintcache
+data/img/capos

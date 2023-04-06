@@ -32,6 +32,7 @@ const {
   memberRankByFP,
 } = require('../../common/other');
 const { CHANNEL_ID, BOTFATHER_ID, TOKEN } = require('../../config/constants');
+const CapoSchema = require("../../models/Schemas/CapoSchema");
 
 //////////////////////////////////////// Functions ////////////////////////////////////////
 
@@ -199,7 +200,7 @@ router.post('/getLevelWithoutSend', async (req, res) => {
   try {
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     const data = await getLevelResult(TOKEN, BotfatherChannelId);
-    return res.status(200).json({ status: true, message: 'Success', data });
+    return successResponse(res, data);
   } catch (err) {
     console.log(err);
     return res
@@ -475,6 +476,15 @@ router.get('/building', async (req, res) => {
   } catch (err) {
     console.log(err);
     return errorResponse(res, 'loadBuilding error', err);
+  }
+});
+
+router.get('/capos', async (req, res) => {
+  try {
+    const data = await CapoSchema.find({});
+    return successResponse(res, data);
+  } catch (err) {
+    return errorResponse(res, 'Failed to get capos', err)
   }
 });
 module.exports = router;
