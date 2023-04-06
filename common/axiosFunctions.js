@@ -26,7 +26,7 @@ async function post(url, message) {
       content: '<@' + process.env.BOTFATHER_ID ?? 'NO TOKEN ' + '> ' + message,
     },
     {
-      headers: headers,
+      headers: headers(),
     }
   );
 }

@@ -46,12 +46,66 @@ async function getTotalNumberOfGangMember() {
   }
 }
 
+function parseTFP(str) {
+  let fp = Number.parseFloat(str);
+  var strFP = fp.toString();
+  var unit = str.slice(str.indexOf(strFP) + strFP.length, str.length);
+  const FP_UNIT = new Map([
+    ['', 0],
+    ['.', 0],
+    ['K', 1],
+    ['.K', 1],
+    ['M', 2],
+    ['.M', 2],
+    ['B', 3],
+    ['.B', 3],
+  ]);
+  return { fp, unit: FP_UNIT.get(unit) };
+}
+
 async function memberRankByFP() {
   try {
     const res = await LevelSchema.findOne().sort({ _id: -1 });
-    console.log(res);
     if (res === null) return res;
-    res.Datas.sort((a, b) => (a.tfp > b.tfp ? 1 : b.tfp > a.tfp ? -1 : 0));
+
+    res.Datas.sort((a, b) => {
+      const aTFP = parseTFP(a.tfp.replace(' ', ''));
+      const bTFP = parseTFP(b.tfp.replace(' ', ''));
+      if (aTFP.unit === bTFP.unit) {
+        return bTFP.fp - aTFP.fp;
+      } else {
+        return bTFP.unit - aTFP.unit;
+      }
+    });
+    return res;
+  } catch (err) {
+    console.error('memberRankByFP error: ', err.message);
+  }
+}
+
+async function getTimeUntilGW() {
+  try {
+    const cDate = new Date();
+    let tDate = new Date();
+
+    let targetDate;
+    let curDay = tDate.getUTCDay();
+    if (curDay >= 4) targetDate = tDate.getUTCDate() + 6 - curDay + 4;
+    else targetDate = tDate.getUTCDate() + 4 - curDay;
+
+    tDate.setUTCSeconds(0);
+    tDate.setUTCMinutes(0);
+    tDate.setUTCHours(0);
+    tDate.setUTCDate(targetDate);
+
+    const diffTime = (tDate.getTime() - cDate.getTime()) / 1000;
+
+    const res = {
+      days: Math.floor((diffTime / (3600 * 24)) % 31),
+      hours: Math.floor((diffTime / 3600) % 24),
+      minutes: Math.floor((diffTime / 60) % 60),
+      seconds: diffTime % 60,
+    };
     return res;
   } catch (err) {
     console.error('memberRankByFP error: ', err.message);
@@ -64,4 +118,5 @@ module.exports = {
   getUserInfoById,
   getTotalNumberOfGangMember,
   memberRankByFP,
+  getTimeUntilGW,
 };
