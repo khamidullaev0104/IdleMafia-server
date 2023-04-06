@@ -29,7 +29,7 @@ function check_node_status {
 
 function check_client_status {
   print_info "Checking client status..."
-  if (( $(curl -sSIL https://gangwarsai.solvve.com | grep "HTTP/1.1 200" | wc -l == 0 ));then
+  if (( $(curl -sSIL https://gangwarsai.solvve.com) | grep "HTTP/1.1 200" | wc -l == 0 ));then
     print_error "Client deployment error"
   else
     print_info "Client updated successfully"
