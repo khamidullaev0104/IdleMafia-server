@@ -188,20 +188,16 @@ router.post('/getLevel', async (req, res) => {
     await new Promise((r) => setTimeout(r, 300));
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     if (BotfatherChannelId === undefined)
-      return res
-        .status(200)
-        .json({
-          status: false,
-          message: 'Channel Error- Can not get channel ID',
-        });
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not get channel ID',
+      });
     const data = await getLevelResult(TOKEN, BotfatherChannelId);
     if (data === null || data === undefined)
-      return res
-        .status(200)
-        .json({
-          status: false,
-          message: 'Channel Error- Can not access in DM',
-        });
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not access in DM',
+      });
     return res.status(200).json({ status: true, message: 'Success', data });
   } catch (err) {
     console.log(err);
@@ -215,20 +211,16 @@ router.post('/getLevelWithoutSend', async (req, res) => {
   try {
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     if (BotfatherChannelId === undefined)
-      return res
-        .status(200)
-        .json({
-          status: false,
-          message: 'Channel Error- Can not get channel ID',
-        });
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not get channel ID',
+      });
     const data = await getLevelResult(TOKEN, BotfatherChannelId);
     if (data === null || data === undefined)
-      return res
-        .status(200)
-        .json({
-          status: false,
-          message: 'Channel Error- Can not access in DM',
-        });
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not access in DM',
+      });
     return res.status(200).json({ status: true, message: 'Success', data });
   } catch (err) {
     console.log(err);
@@ -244,20 +236,16 @@ router.post('/getPoint', async (req, res) => {
     await new Promise((r) => setTimeout(r, 300));
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     if (BotfatherChannelId === undefined)
-      return res
-        .status(200)
-        .json({
-          status: false,
-          message: 'Channel Error- Can not get channel ID',
-        });
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not get channel ID',
+      });
     const data = await getPointResult(TOKEN, BotfatherChannelId);
     if (data === null || data === undefined)
-      return res
-        .status(200)
-        .json({
-          status: false,
-          message: 'Channel Error- Can not access in DM',
-        });
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not access in DM',
+      });
     return res.status(200).json({ status: true, message: 'Success', data });
   } catch (err) {
     console.log(err);
@@ -271,20 +259,16 @@ router.post('/getPointWithoutSend', async (req, res) => {
   try {
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     if (BotfatherChannelId === undefined)
-      return res
-        .status(200)
-        .json({
-          status: false,
-          message: 'Channel Error- Can not get channel ID',
-        });
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not get channel ID',
+      });
     const data = await getPointResult(TOKEN, BotfatherChannelId);
     if (data === null || data === undefined)
-      return res
-        .status(200)
-        .json({
-          status: false,
-          message: 'Channel Error- Can not access in DM',
-        });
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not access in DM',
+      });
     return res.status(200).json({ status: true, message: 'Success', data });
   } catch (err) {
     console.log(err);
@@ -300,20 +284,16 @@ router.post('/getAttack', async (req, res) => {
     await new Promise((r) => setTimeout(r, 300));
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     if (BotfatherChannelId === undefined)
-      return res
-        .status(200)
-        .json({
-          status: false,
-          message: 'Channel Error- Can not get channel ID',
-        });
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not get channel ID',
+      });
     const data = await getAttackResult(TOKEN, BotfatherChannelId);
     if (data === null || data === undefined)
-      return res
-        .status(200)
-        .json({
-          status: false,
-          message: 'Channel Error- Can not access in DM',
-        });
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not access in DM',
+      });
     if (data === OFF_SEASON)
       return res
         .status(200)
@@ -343,20 +323,16 @@ router.post('/getAttackWithoutSend', async (req, res) => {
   try {
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     if (BotfatherChannelId === undefined)
-      return res
-        .status(200)
-        .json({
-          status: false,
-          message: 'Channel Error- Can not get channel ID',
-        });
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not get channel ID',
+      });
     const data = await getAttackResult(TOKEN, BotfatherChannelId);
     if (data === null || data === undefined)
-      return res
-        .status(200)
-        .json({
-          status: false,
-          message: 'Channel Error- Can not access in DM',
-        });
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not access in DM',
+      });
     if (data === OFF_SEASON)
       return res
         .status(200)
@@ -376,20 +352,16 @@ router.post('/getBuilding', async (req, res) => {
     await new Promise((r) => setTimeout(r, 300));
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     if (BotfatherChannelId === undefined)
-      return res
-        .status(200)
-        .json({
-          status: false,
-          message: 'Channel Error- Can not get channel ID',
-        });
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not get channel ID',
+      });
     const data = await getBuildingResult(TOKEN, BotfatherChannelId);
     if (data === null || data === undefined)
-      return res
-        .status(200)
-        .json({
-          status: false,
-          message: 'Channel Error- Can not access in DM',
-        });
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not access in DM',
+      });
     if (data === OFF_SEASON)
       return res
         .status(200)
@@ -407,20 +379,16 @@ router.post('/getBuildingWithoutSend', async (req, res) => {
   try {
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     if (BotfatherChannelId === undefined)
-      return res
-        .status(200)
-        .json({
-          status: false,
-          message: 'Channel Error- Can not get channel ID',
-        });
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not get channel ID',
+      });
     const data = await getBuildingResult(TOKEN, BotfatherChannelId);
     if (data === null || data === undefined)
-      return res
-        .status(200)
-        .json({
-          status: false,
-          message: 'Channel Error- Can not access in DM',
-        });
+      return res.status(200).json({
+        status: false,
+        message: 'Channel Error- Can not access in DM',
+      });
     if (data === OFF_SEASON)
       return res
         .status(200)
