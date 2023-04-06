@@ -4,5 +4,7 @@ module.exports = Object.freeze({
   TOKEN:
     'MTA4NTI1MDc4MjYzMjM0NTc1Mg.GGmup7.Q55iYkCw8y98x7D9D9CuPhiOLjhagjhh8RlHX4',
   MONGO_URL: 'mongodb://127.0.0.1:27017/IdleMafia',
+  MONGO_ATALAS_URL:
+    'mongodb+srv://worlddevband777:Security2023!@cluster0.vqawfjg.mongodb.net/idleMafia',
   DIR_PREFIX: 'level-img/',
 });

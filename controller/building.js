@@ -17,11 +17,7 @@ const getBuildingResult = async (token, BotfatherChannelId) => {
     if (res_msg.data[0].content === 'Off season') return 'Off season';
     datas.your.push(...res_msg.data[1].embeds[0].fields);
     datas.enemy.push(...res_msg.data[0].embeds[0].fields);
-    const res = await buildingParseModule(datas);
-    const building = new BuildingSchema({
-      Datas: res,
-    });
-    return await building.save();
+    return await buildingParseModule(datas);
   } catch (err) {
     console.log('getBuildingResult error', err);
   }
@@ -39,4 +35,4 @@ const getBuildingResultFromDB = async (date) => {
 module.exports = {
   getBuildingResult,
   getBuildingResultFromDB,
-}; 
+};
