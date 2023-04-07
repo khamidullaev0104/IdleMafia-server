@@ -1,15 +1,24 @@
 module.exports = Object.freeze({
-  OFF_SEASON: 'Off season',
+  BUILDING_COMMAND_YOUR_START_STRING: 'Your Gang',
+  BUILDING_COMMAND_ENEMY_START_STRING: 'Enemy',
   END_OF_ATTACK_LOOP:
     'For # of GvG attacks remaining, # of GvG defense available',
   END_OF_LEVEL_LOOP: 'Player rank, top 5 fight power,',
   END_OF_POINT_LOOP: 'Gang points, Nemesis attack damages',
+
+  OFF_SEASON: 'Off season',
   ERROR_USER_EXIST: 'User already exists',
   ERROR_SERVER: 'Server Error',
-  PERMISSION_USER: 'user',
-  PERMISSION_ADMIN: 'admin',
+  ERROR_BUILDING_COMMAND: 'Can not find message from building command',
+  ERROR_GET_CHANNELID: 'Channel Error- Can not get channel ID',
+  ERROR_ACCESS_DM: 'Channel Error- Can not access in DM',
+  ERROR_EMPTY_DB: 'Empty DB',
   INVALID_USERID: 'Invalid User ID',
   INVALID_USERNAME: 'Invalid Credentials-Username can not found',
   INVALID_PASSWORD: 'Invalid Credentials-Password different',
+
+  PERMISSION_USER: 'user',
+  PERMISSION_ADMIN: 'admin',
+
   SUCCESS_USERREMOVE: 'User Remove success',
 });
