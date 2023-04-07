@@ -15,6 +15,17 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  Timezone: {
+    type: String,
+    required: true,
+  },
+  Permission: {
+    type: String,
+    required: true,
+  },
+  Game_Username: {
+    type: String,
+  },
   Avatar: {
     type: String,
   },

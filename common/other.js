@@ -1,5 +1,4 @@
 const axios = require('axios');
-const UserSchema = require('../models/Schemas/UserSchema');
 const PointSchema = require('../models/Schemas/PointSchema');
 const LevelSchema = require('../models/Schemas/LevelSchema');
 
@@ -26,15 +25,6 @@ async function getProfileFromToken(token) {
     return res;
   } catch (err) {
     console.log('loginByEmailPassword error: ', err);
-  }
-}
-
-async function getUserInfoById(id) {
-  try {
-    const user = await UserSchema.findById(id).select('-password');
-    return user;
-  } catch (err) {
-    console.error('getUserInfoById error: ', err.message);
   }
 }
 
@@ -115,7 +105,6 @@ async function getTimeUntilGW() {
 module.exports = {
   loginByDiscordEmailPassword,
   getProfileFromToken,
-  getUserInfoById,
   getTotalNumberOfGangMember,
   memberRankByFP,
   getTimeUntilGW,

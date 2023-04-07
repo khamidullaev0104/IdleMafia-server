@@ -24,17 +24,21 @@ const {
 
 const sendMessageToChannel = require('../../common/sendMessage');
 const getChannelID = require('../../common/getChannelID');
-const login = require('../../common/login');
-const register = require('../../common/register');
+const {
+  login,
+  register,
+  getUserById,
+  removeUserbyID,
+} = require('../../common/auth');
 const { loadBuildingModule } = require('../../common/countBuildings');
 const {
-  getUserInfoById,
   getTotalNumberOfGangMember,
   memberRankByFP,
   getTimeUntilGW,
 } = require('../../common/other');
 const { CHANNEL_ID, BOTFATHER_ID, TOKEN } = require('../../config/constants');
-const CapoSchema = require("../../models/Schemas/CapoSchema");
+const { SUCCESS_USERREMOVE } = require('../../config/string');
+const CapoSchema = require('../../models/Schemas/CapoSchema');
 
 //////////////////////////////////////// Functions ////////////////////////////////////////
 
@@ -68,11 +72,8 @@ router.post(
 
     try {
       const ret = await login(username, password);
-      if (typeof ret.user === 'undefined') {
-        return res
-          .status(200)
-          .json({ status: false, message: 'login error', err: ret });
-      }
+      if (typeof ret !== 'object')
+        return res.status(200).json({ status: false, message: ret });
       return res
         .status(200)
         .json({ status: true, message: 'login success', data: ret });
@@ -87,10 +88,26 @@ router.post(
 
 router.post('/getUserbyId', async (req, res) => {
   try {
-    const user = await getUserInfoById(req.body.id);
+    const ret = await getUserById(req.body.id);
+    if (typeof ret !== 'object')
+      return res.status(200).json({ status: false, message: ret });
     return res
       .status(200)
-      .json({ status: true, message: 'getUserbyId success', data: user });
+      .json({ status: true, message: 'getUserbyId success', data: ret });
+  } catch (err) {
+    console.error(err.message);
+    return res
+      .status(500)
+      .send({ status: false, message: 'getUserbyId error', err });
+  }
+});
+
+router.post('/removeUserbyID', async (req, res) => {
+  try {
+    const ret = await removeUserbyID(req.body.id);
+    if (ret === SUCCESS_USERREMOVE)
+      return res.status(200).json({ status: true, message: ret });
+    return res.status(200).json({ status: false, message: ret });
   } catch (err) {
     console.error(err.message);
     return res
@@ -115,14 +132,13 @@ router.post(
         .json({ status: false, message: 'login error', err: errors.array() });
     }
 
-    const { username, email, password } = req.body;
+    const { username, email, password, timezone } = req.body;
     try {
-      const ret = await register(username, email, password);
-      if (typeof ret.user === 'undefined') {
-        return res
-          .status(200)
-          .json({ status: false, errors: 'register error', err: ret });
+      const ret = await register(username, email, password, timezone);
+      if (typeof ret !== 'object') {
+        return res.status(200).json({ status: false, message: ret });
       }
+
       return res
         .status(200)
         .json({ status: true, message: 'register success', data: ret });
@@ -130,14 +146,13 @@ router.post(
       console.log(err);
       return res
         .status(200)
-        .json({ status: false, errors: 'register error', err });
+        .json({ status: false, message: 'register error', err });
     }
   }
 );
 
 router.post('/createMessage', async (req, res) => {
   const { message } = req.body;
-  console.log('createMessage function excution');
   try {
     await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, message);
     await new Promise((r) => setTimeout(r, 300));
@@ -587,47 +602,48 @@ router.get('/capos', async (req, res) => {
     const data = await CapoSchema.find({});
     return successResponse(res, data);
   } catch (err) {
-    return errorResponse(res, 'Failed to get capos', err)
+    return errorResponse(res, 'Failed to get capos', err);
   }
 });
 
-router.post('/capos/delete',
-    check('id', 'capo id is required').notEmpty(),
-    async (req, res) => {
+router.post(
+  '/capos/delete',
+  check('id', 'capo id is required').notEmpty(),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return errorResponse(res, 'Failed to delete capo', errors);
+    }
 
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return errorResponse(res, 'Failed to delete capo', errors)
-      }
+    const { id } = req.body;
+    try {
+      await CapoSchema.findByIdAndDelete(id);
+      return successResponse(res);
+    } catch (err) {
+      return errorResponse(res, 'Failed to delete capo', err);
+    }
+  }
+);
 
-      const {id} = req.body;
-      try {
-        await CapoSchema.findByIdAndDelete(id);
-        return successResponse(res);
-      } catch (err) {
-        return errorResponse(res, 'Failed to delete capo', err)
-      }
-    });
+router.post(
+  '/capos/update',
+  check('id', 'capo id is required').notEmpty(),
+  check('name', 'capo id is required').notEmpty(),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return errorResponse(res, 'Failed to update capo', errors);
+    }
 
-router.post('/capos/update',
-    check('id', 'capo id is required').notEmpty(),
-    check('name', 'capo id is required').notEmpty(),
-    async (req, res) => {
+    const { id, name } = req.body;
+    try {
+      await CapoSchema.findByIdAndUpdate(id, { Name: name });
 
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return errorResponse(res, 'Failed to update capo', errors)
-      }
-
-      const {id,name} = req.body;
-      try {
-        await CapoSchema.findByIdAndUpdate(id,{Name:name});
-
-        return successResponse(res);
-      } catch (err) {
-        return errorResponse(res, 'Failed to update capo', err)
-      }
-    });
-
+      return successResponse(res);
+    } catch (err) {
+      return errorResponse(res, 'Failed to update capo', err);
+    }
+  }
+);
 
 module.exports = router;
