@@ -14,7 +14,7 @@ config/constants.js
 config/production.json
 config/default.json
 
-
+.gitkeep
 level-img
 client/build
 client/.eslintcache
