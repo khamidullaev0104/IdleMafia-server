@@ -556,25 +556,25 @@ router.post(
   }
 );
 
-router.post(
-  '/capos/update',
-  check('id', 'capo id is required').notEmpty(),
-  check('name', 'capo id is required').notEmpty(),
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return errorResponse(res, 'Failed to update capo', errors);
-    }
+router.post('/capos/patch',
+    check('id', 'capo id is required').notEmpty(),
+    check('name', 'capo id is required').notEmpty(),
+    async (req, res) => {
 
-    const { id, name } = req.body;
-    try {
-      await CapoSchema.findByIdAndUpdate(id, { Name: name });
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return errorResponse(res, 'Failed to update capo', errors)
+      }
 
-      return successResponse(res);
-    } catch (err) {
-      return errorResponse(res, 'Failed to update capo', err);
-    }
+      const {id,name} = req.body;
+      try {
+        await CapoSchema.findByIdAndUpdate(id,{Name:name});
+
+        return successResponse(res);
+      } catch (err) {
+        return errorResponse(res, 'Failed to update capo', err)
+      }
   }
-);
+)
 
 module.exports = router;

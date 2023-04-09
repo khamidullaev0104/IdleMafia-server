@@ -11,11 +11,6 @@ const CapoSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  Match: {
-    type: String,
-    required: true,
-    unique: false,
-  },
 });
 
 module.exports = mongoose.model('capo', CapoSchema);
