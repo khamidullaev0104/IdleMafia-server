@@ -507,7 +507,7 @@ router.post('/capos/delete',
       }
     });
 
-router.post('/capos/update',
+router.post('/capos/patch',
     check('id', 'capo id is required').notEmpty(),
     check('name', 'capo id is required').notEmpty(),
     async (req, res) => {
