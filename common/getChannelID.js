@@ -1,15 +1,9 @@
-const axios = require('axios');
+const { axiosGet } = require('../common/axiosFunctions');
 
 async function getChannelID(token, botFatherID) {
   try {
-    let res_channelList = await axios.get(
-      'https://discordapp.com/api/users/@me/channels',
-      {
-        headers: {
-          authorization: token,
-          'content-type': 'application/json',
-        },
-      }
+    let res_channelList = await axiosGet(
+      'https://discordapp.com/api/users/@me/channels'
     );
 
     let BotfatherChannelId;

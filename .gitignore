@@ -19,4 +19,5 @@ level-img
 client/build
 client/.eslintcache
 data/img/capos
+data/cache
 eng.traineddata
