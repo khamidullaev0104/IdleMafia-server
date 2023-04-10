@@ -21,27 +21,29 @@ async function OnDbConnected() {
             if (process.env.DEBUG ?? false) console.log(`Character ${character.name}`);
 
             for (const characterCapo of character.members) {
+                let capoImgUrl = path.join(
+                    process.env.PATH_ROOT,
+                    `data/img/capos/${characterCapo.img}`
+                );
+
+                if (!fs.existsSync(capoImgUrl)) {
+                    if (process.env.DEBUG ?? false) console.log(`Capo with broken image ${capoImgUrl}`);
+                    break;
+                }
 
                 for (const capo of capos) {
                     let capoExampleImgUrl = path.join(
                         process.env.PATH_ROOT,
                         `data/img/capos/${capo.Image_url}`
                     );
-                    let capoImgUrl = path.join(
-                        process.env.PATH_ROOT,
-                        `data/img/capos/${characterCapo.img}`
-                    );
 
                     if (!fs.existsSync(capoExampleImgUrl)) {
                         if (process.env.DEBUG ?? false)
-                            console.log(`Capo example with broken image`);
+                            console.log(`Capo example with broken image {capoExampleImgUrl}`);
                         break;
                     }
 
-                    if (!fs.existsSync(capoImgUrl)) {
-                        if (process.env.DEBUG ?? false) console.log(`Capo with broken image`);
-                        break;
-                    }
+
                     const testimage = await Jimp.read(capoExampleImgUrl);
                     const charImage = await Jimp.read(capoImgUrl);
 
