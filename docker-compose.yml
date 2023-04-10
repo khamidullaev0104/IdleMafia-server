@@ -2,13 +2,34 @@ version: '3.8'
 
 services:
   mongodb:
-    image: mongo:${MONGO_DB_TAG}
+    image: mongo@sha256:cc4522f3f5c0d3435046eb51b1d8a633d8e24d8e661b6ba127a98e5519d11bde
     container_name: mongodb
     ports:
       - 27017:27017
     volumes:
       - gangwars-mongodb_data:/data/db
+    networks:
+      - gangwars-network
     restart: unless-stopped
+
+  # mongo-gui repo: https://github.com/arunbandari/mongo-gui/
+  # build image:docker build -t mongo-gui .
+  mongo-gui:
+    container_name: 'mongo-gui'
+    image: mongo-gui:latest
+    depends_on:
+      - mongodb
+    restart: unless-stopped
+    ports:
+      - '4321:4321'
+    networks:
+      - gangwars-network
+    environment:
+      - MONGO_URL=mongodb://mongodb:27017
 
 volumes:
   gangwars-mongodb_data:
+
+networks:
+  gangwars-network:
+    driver: bridge
