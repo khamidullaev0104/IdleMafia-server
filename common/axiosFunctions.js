@@ -16,7 +16,7 @@ async function get(url) {
   if (process.env.DEBUG ?? false)
     console.log(`[axios]Cache:${process.env.USE_CACHE}`);
   let result = null;
-  let key = JSON.stringify(headers()) + url;
+  let key = headers().authorization + url;
 
   if (process.env.USE_CACHE === 'true') result = axiosCache.get(key);
 
