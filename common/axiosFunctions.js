@@ -18,12 +18,14 @@ async function get(url) {
   let result = null;
   if (process.env.USE_CACHE === 'true') result = axiosCache.get(url);
 
+  let key = JSON.stringify(headers()) + url;
+
   if (result === null) {
-    result = await axios.get(url, {
+    result = await axios.get(key, {
       headers: headers(),
     });
     if (process.env.USE_CACHE === 'true')
-      axiosCache.set(url, result.data, parseInt(process.env.CACHE_TTL));
+      axiosCache.set(key, result.data, parseInt(process.env.CACHE_TTL));
   } else {
     if (process.env.DEBUG ?? false) console.log(`[axios]Cached get request`);
     result = { data: JSON.parse(result.toString()) };
