@@ -22,7 +22,7 @@ async function get(url) {
 
 
   if (result === null) {
-    result = await axios.get(key, {
+    result = await axios.get(url, {
       headers: headers(),
     });
     if (process.env.USE_CACHE === 'true')
