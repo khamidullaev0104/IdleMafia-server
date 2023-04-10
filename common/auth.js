@@ -12,6 +12,9 @@ const {
   INVALID_USERID,
   INVALID_PASSWORD,
   INVALID_USERNAME,
+  INVALID_CURRENTPASSWORD,
+  INVALID_NEWPASSWORD_DIFFERENCE,
+  INVALID_CURRENTPASSWORD_SMALL,
 } = require('../config/string');
 
 async function register(username, email, password, timezone) {
@@ -99,11 +102,12 @@ async function getUserById(id) {
         avatar: user.Avatar,
         timezone: user.Timezone,
         game_username: user.Game_Username,
+        permission: user.Permission,
       },
     };
     return payload;
   } catch (err) {
-    console.error('getUserInfoById error: ', err.message);
+    console.error('getUserById error: ', err.message);
     return INVALID_USERID;
   }
 }
@@ -121,9 +125,35 @@ async function removeUserbyID(id) {
   }
 }
 
+async function changeUserInfo(info) {
+  try {
+    let user = await UserSchema.findById(info.userId);
+    if (!user) return INVALID_USERID;
+    user.Username = info.username;
+    user.Email = info.email;
+    user.Game_Username = info.gangName;
+
+    if (info.isPasswordChange) {
+      const isMatch = await bcrypt.compare(info.currentPassword, user.Password);
+      if (!isMatch) return INVALID_CURRENTPASSWORD;
+      if (info.newPassword !== info.confirmPassword)
+        return INVALID_NEWPASSWORD_DIFFERENCE;
+      if (info.newPassword.length > 6) return INVALID_CURRENTPASSWORD_SMALL;
+      const salt = await bcrypt.genSalt(10);
+      user.Password = await bcrypt.hash(info.newPassword, salt);
+    }
+
+    return await user.save();
+  } catch (err) {
+    console.error('changeUserInfo: ', err.message);
+    return INVALID_USERID;
+  }
+}
+
 module.exports = {
   register,
   login,
   getUserById,
   removeUserbyID,
+  changeUserInfo,
 };

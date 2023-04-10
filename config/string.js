@@ -16,6 +16,10 @@ module.exports = Object.freeze({
   INVALID_USERID: 'Invalid User ID',
   INVALID_USERNAME: 'Invalid Credentials-Username can not found',
   INVALID_PASSWORD: 'Invalid Credentials-Password different',
+  INVALID_CURRENTPASSWORD: 'Current Password different',
+  INVALID_NEWPASSWORD_DIFFERENCE:
+    'New Password is not different Confirm Password',
+  INVALID_CURRENTPASSWORD_SMALL: 'Password must be more than 6 letters',
 
   PERMISSION_USER: 'user',
   PERMISSION_ADMIN: 'admin',

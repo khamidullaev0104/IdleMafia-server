@@ -29,6 +29,7 @@ const {
   register,
   getUserById,
   removeUserbyID,
+  changeUserInfo,
 } = require('../../common/auth');
 const { loadBuildingModule } = require('../../common/countBuildings');
 const {
@@ -117,6 +118,37 @@ router.post('/removeUserbyID', async (req, res) => {
 });
 
 router.post(
+  '/changeUserInfo',
+  check('info.username', 'Name is required').notEmpty(),
+  check('info.email', 'Please include a valid email').isEmail(),
+  check(
+    'info.isPasswordChange',
+    'isPasswordChange variable is required'
+  ).notEmpty(),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty())
+        return res
+          .status(200)
+          .json({ status: false, message: errors.array()[0].msg });
+
+      const ret = await changeUserInfo(req.body.info);
+      if (typeof ret !== 'object')
+        return res.status(200).json({ status: false, message: ret });
+      return res
+        .status(200)
+        .json({ status: true, message: 'success', data: ret });
+    } catch (err) {
+      console.error(err.message);
+      return res
+        .status(500)
+        .send({ status: false, message: 'changeUserInfo error', err });
+    }
+  }
+);
+
+router.post(
   '/register',
   check('username', 'Name is required').notEmpty(),
   check('email', 'Please include a valid email').isEmail(),
@@ -129,7 +161,7 @@ router.post(
     if (!errors.isEmpty()) {
       return res
         .status(200)
-        .json({ status: false, message: 'login error', err: errors.array() });
+        .json({ status: false, message: errors.array()[0].msg });
     }
 
     const { username, email, password, timezone } = req.body;
@@ -141,7 +173,7 @@ router.post(
 
       return res
         .status(200)
-        .json({ status: true, message: 'register success', data: ret });
+        .json({ status: true, message: 'success', data: ret });
     } catch (err) {
       console.log(err);
       return res
