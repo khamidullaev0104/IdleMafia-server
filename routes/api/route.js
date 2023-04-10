@@ -37,6 +37,8 @@ const {
   memberRankByFP,
   getTimeUntilGW,
 } = require('../../common/other');
+
+const { loadCaposList } = require('../../common/capo');
 const { CHANNEL_ID, BOTFATHER_ID, TOKEN } = require('../../config/constants');
 const { SUCCESS_USERREMOVE } = require('../../config/string');
 const CapoSchema = require('../../models/Schemas/CapoSchema');
@@ -476,9 +478,11 @@ router.post('/getTotalMembers', async (req, res) => {
     const data = await getTotalNumberOfGangMember();
     if (typeof data !== 'object')
       return res.status(200).json({ status: false, message: ERROR_EMPTY_DB });
-    return res
-      .status(200)
-      .json({ status: true, message: 'Success', data: (data ? data.Datas.length : 0) });
+    return res.status(200).json({
+      status: true,
+      message: 'Success',
+      data: data ? data.Datas.length : 0,
+    });
   } catch (err) {
     console.log(err);
     return res
@@ -504,9 +508,11 @@ router.post('/getTotalMembers', async (req, res) => {
     const data = await getTotalNumberOfGangMember();
     if (typeof data !== 'object')
       return res.status(200).json({ status: false, message: ERROR_EMPTY_DB });
-    return res
-      .status(200)
-      .json({ status: true, message: 'Success', data: (data ? data.Datas.length : 0) });
+    return res.status(200).json({
+      status: true,
+      message: 'Success',
+      data: data ? data.Datas.length : 0,
+    });
   } catch (err) {
     console.log(err);
     return res
@@ -563,7 +569,7 @@ router.get('/getBuildingInfo', async (req, res) => {
 
 router.get('/capos', async (req, res) => {
   try {
-    const data = await CapoSchema.find({});
+    const data = await loadCaposList();
     return successResponse(res, data);
   } catch (err) {
     return errorResponse(res, 'Failed to get capos', err);
@@ -589,26 +595,26 @@ router.post(
   }
 );
 
-router.post('/capos/patch',
-    check('id', 'capo id is required').notEmpty(),
-    check('name', 'capo id is required').notEmpty(),
-    async (req, res) => {
+router.post(
+  '/capos/patch',
+  check('id', 'capo id is required').notEmpty(),
+  check('name', 'capo id is required').notEmpty(),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return errorResponse(res, 'Failed to update capo', errors);
+    }
 
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return errorResponse(res, 'Failed to update capo', errors)
-      }
+    const { id, name } = req.body;
+    try {
+      await CapoSchema.findByIdAndUpdate(id, { Name: name });
 
-      const {id,name} = req.body;
-      try {
-        await CapoSchema.findByIdAndUpdate(id,{Name:name});
-
-        return successResponse(res);
-      } catch (err) {
-        return errorResponse(res, 'Failed to update capo', err)
-      }
+      return successResponse(res);
+    } catch (err) {
+      return errorResponse(res, 'Failed to update capo', err);
+    }
   }
-)
+);
 
 
 router.get('/level', async (req, res) => {
