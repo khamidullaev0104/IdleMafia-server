@@ -12,6 +12,9 @@ async function OnDbConnected() {
 
   let capos = await CapoSchema.find({});
   let levels = await LevelSchema.find({}).sort({ Date: -1 }).limit(10);
+  if (process.env.DEBUG ?? false) console.log(`capos count ${capos.length}`);
+  if (process.env.DEBUG ?? false) console.log(`levels count ${levels.length}`);
+
   for (const level of levels) {
     let newLevel = level;
     for (const character of level.Datas) {
