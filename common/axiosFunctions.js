@@ -16,9 +16,10 @@ async function get(url) {
   if (process.env.DEBUG ?? false)
     console.log(`[axios]Cache:${process.env.USE_CACHE}`);
   let result = null;
-  if (process.env.USE_CACHE === 'true') result = axiosCache.get(url);
-
   let key = JSON.stringify(headers()) + url;
+
+  if (process.env.USE_CACHE === 'true') result = axiosCache.get(key);
+
 
   if (result === null) {
     result = await axios.get(key, {
