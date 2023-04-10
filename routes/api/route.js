@@ -40,6 +40,7 @@ const {
 const { CHANNEL_ID, BOTFATHER_ID, TOKEN } = require('../../config/constants');
 const { SUCCESS_USERREMOVE } = require('../../config/string');
 const CapoSchema = require('../../models/Schemas/CapoSchema');
+const LevelSchema = require('../../models/Schemas/LevelSchema');
 
 //////////////////////////////////////// Functions ////////////////////////////////////////
 
@@ -608,5 +609,15 @@ router.post('/capos/patch',
       }
   }
 )
+
+
+router.get('/level', async (req, res) => {
+  try {
+    const data= await LevelSchema.find({}).sort({ Date: -1 }).limit(1);
+    return successResponse(res, data);
+  } catch (err) {
+    return errorResponse(res, 'Failed to get total defense', err);
+  }
+});
 
 module.exports = router;
