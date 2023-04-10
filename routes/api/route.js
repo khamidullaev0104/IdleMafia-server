@@ -477,7 +477,7 @@ router.post('/getTotalMembers', async (req, res) => {
       return res.status(200).json({ status: false, message: ERROR_EMPTY_DB });
     return res
       .status(200)
-      .json({ status: true, message: 'Success', data: data.Datas.length });
+      .json({ status: true, message: 'Success', data: (data ? data.Datas.length : 0) });
   } catch (err) {
     console.log(err);
     return res
@@ -505,7 +505,7 @@ router.post('/getTotalMembers', async (req, res) => {
       return res.status(200).json({ status: false, message: ERROR_EMPTY_DB });
     return res
       .status(200)
-      .json({ status: true, message: 'Success', data: data.Datas.length });
+      .json({ status: true, message: 'Success', data: (data ? data.Datas.length : 0) });
   } catch (err) {
     console.log(err);
     return res
