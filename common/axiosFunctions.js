@@ -19,13 +19,13 @@ async function get(url) {
 async function post(url, message) {
   if (process.env.DEBUG ?? false)
     console.log('[axios]POST', `${url}:${message}`);
-  if (process.env.DEBUG ?? false)
-    console.log(headers());
+  if (process.env.DEBUG ?? false) console.log(headers());
 
- return await axios.post(
+  return await axios.post(
     url,
     {
-      content: '<@' + (process.env.BOTFATHER_ID ?? 'NO TOKEN ') + '> ' + message,
+      content:
+        '<@' + (process.env.BOTFATHER_ID ?? 'NO TOKEN ') + '> ' + message,
     },
     {
       headers: headers(),
