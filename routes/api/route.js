@@ -42,7 +42,6 @@ const { loadCaposList } = require('../../common/capo');
 const { CHANNEL_ID, BOTFATHER_ID, TOKEN } = require('../../config/constants');
 const { SUCCESS_USERREMOVE } = require('../../config/string');
 const CapoSchema = require('../../models/Schemas/CapoSchema');
-const LevelSchema = require('../../models/Schemas/LevelSchema');
 
 //////////////////////////////////////// Functions ////////////////////////////////////////
 
