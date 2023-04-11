@@ -413,21 +413,6 @@ router.post('/getBuildingWithoutSend', async (req, res) => {
   }
 });
 
-router.post('/getLevelResultFromDB', async (req, res) => {
-  try {
-    const { date } = req.body;
-    const data = await getLevelResultFromDB(date);
-    if (typeof data !== 'object')
-      return res.status(200).json({ status: false, message: data });
-    return res.status(200).json({ status: true, message: 'Success', data });
-  } catch (err) {
-    console.log(err);
-    return res
-      .status(200)
-      .json({ status: false, message: 'getLevelResultFromDB error', err });
-  }
-});
-
 router.post('/getPointResultFromDB', async (req, res) => {
   try {
     const { date } = req.body;
@@ -619,11 +604,16 @@ router.post(
 
 router.get('/level', async (req, res) => {
   try {
-    const data= await LevelSchema.find({}).sort({ Date: -1 }).limit(1);
+    const {date} = req.body;
+    const data = await getLevelResultFromDB(date);
+    if (typeof data !== 'object')
+      return errorResponse(res, data);
+
     return successResponse(res, data);
   } catch (err) {
-    return errorResponse(res, 'Failed to get total defense', err);
+    return errorResponse(res, 'Failed to get level result from DB', err);
   }
 });
+
 
 module.exports = router;
