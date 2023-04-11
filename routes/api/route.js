@@ -5,7 +5,6 @@ const { getTotalDefense, getTotalAttack } = require('../../common/defense');
 const {
   ERROR_GET_CHANNELID,
   ERROR_EMPTY_DB,
-  ERROR_GET_LEVEL,
 } = require('../../config/string');
 const {
   getLevelResult,
