@@ -576,8 +576,7 @@ router.post(
 
 router.get('/level', async (req, res) => {
   try {
-    const { date } = req.body;
-    const data = await getLevelResultFromDB(date);
+    const data= await getLevelResultFromDB(req.query.date?? '-1');
     if (typeof data !== 'object') return errorResponse(res, data);
 
     return successResponse(res, data);
