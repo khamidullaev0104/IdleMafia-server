@@ -12,9 +12,13 @@ const getLevelResult = async (token, BotfatherChannelId) => {
       ['limit', i + 1],
     ]);
     const img = res_msg.data[i].attachments[0].url;
+
     let dataLevel = await getLevelCommand(timeNow, i, img);
     datas.push(...dataLevel);
-    if (res_msg.data[i].content.includes(END_OF_LEVEL_LOOP)) break;
+    if (res_msg.data[i].content.includes(END_OF_LEVEL_LOOP)) {
+      console.log('End line reached');
+      break;
+    }
   }
   const level = new LevelSchema({
     Datas: datas,

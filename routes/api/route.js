@@ -51,7 +51,6 @@ const { loadCaposList } = require('../../common/capo');
 const { CHANNEL_ID, BOTFATHER_ID, TOKEN } = require('../../config/constants');
 const { SUCCESS_USERREMOVE } = require('../../config/string');
 const CapoSchema = require('../../models/Schemas/CapoSchema');
-const LevelSchema = require('../../models/Schemas/LevelSchema');
 
 //////////////////////////////////////// Functions ////////////////////////////////////////
 
@@ -229,27 +228,6 @@ router.post('/sendMessageOnly', async (req, res) => {
   }
 });
 
-router.post('/getLevel', async (req, res) => {
-  try {
-    await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, 'level');
-    await new Promise((r) => setTimeout(r, 300));
-    const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
-    if (BotfatherChannelId === undefined)
-      return res
-        .status(200)
-        .json({ status: false, message: ERROR_GET_CHANNELID });
-    const data = await getLevelResult(TOKEN, BotfatherChannelId);
-    if (typeof data !== 'object')
-      return res.status(200).json({ status: false, message: data });
-    return res.status(200).json({ status: true, message: 'Success', data });
-  } catch (err) {
-    console.log(err);
-    return res
-      .status(200)
-      .json({ status: false, message: 'getLevel error', err });
-  }
-});
-
 router.post('/getLevelWithoutSend', async (req, res) => {
   try {
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
@@ -405,21 +383,6 @@ router.post('/getBuildingWithoutSend', async (req, res) => {
     return res
       .status(200)
       .json({ status: false, message: 'getBuilding error', err });
-  }
-});
-
-router.post('/getLevelResultFromDB', async (req, res) => {
-  try {
-    const { date } = req.body;
-    const data = await getLevelResultFromDB(date);
-    if (typeof data !== 'object')
-      return res.status(200).json({ status: false, message: data });
-    return res.status(200).json({ status: true, message: 'Success', data });
-  } catch (err) {
-    console.log(err);
-    return res
-      .status(200)
-      .json({ status: false, message: 'getLevelResultFromDB error', err });
   }
 });
 
@@ -613,10 +576,13 @@ router.post(
 
 router.get('/level', async (req, res) => {
   try {
-    const data = await LevelSchema.find({}).sort({ Date: -1 }).limit(1);
+    const { date } = req.body;
+    const data = await getLevelResultFromDB(date);
+    if (typeof data !== 'object') return errorResponse(res, data);
+
     return successResponse(res, data);
   } catch (err) {
-    return errorResponse(res, 'Failed to get total defense', err);
+    return errorResponse(res, 'Failed to get level result from DB', err);
   }
 });
 

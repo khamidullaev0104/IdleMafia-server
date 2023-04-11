@@ -37,10 +37,12 @@ jobs:
         run: curl --location '127.0.0.1:5000/attack/total' --silent -v 2>&1 | grep 'HTTP/1.1 200'
       - name: test attack/total api
         run: curl --location '127.0.0.1:5000/capos' --silent -v 2>&1 | grep 'HTTP/1.1 200'
-      - name: test attack/total capos/update
+      - name: test capos/update
         run: curl --location --request POST '127.0.0.1:5000/capos/patch' --silent -v 2>&1 | grep 'HTTP/1.1 200'
-      - name: test attack/total capos/delete
+      - name: test capos/delete
         run: curl --location --request POST '127.0.0.1:5000/capos/delete' --silent -v 2>&1 | grep 'HTTP/1.1 200'
+      - name: test level
+        run: curl --location --request GET '127.0.0.1:5000/level' --silent -v 2>&1 | grep 'HTTP/1.1 200'
 
 
       - name: Stop server
