@@ -92,6 +92,7 @@ async function login(username, password) {
         avatar: user.Avatar,
         timezone: user.Timezone,
         game_username: user.Game_Username,
+        permission: user.Permission,
       },
     };
     return payload;
