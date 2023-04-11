@@ -1,7 +1,7 @@
 const LevelSchema = require('../models/Schemas/LevelSchema');
 const getLevelCommand = require('../common/parseImage');
 const { END_OF_LEVEL_LOOP } = require('../config/string');
-const {axiosGetChannel} = require("../common/axiosFunctions");
+const { axiosGetChannel } = require('../common/axiosFunctions');
 
 const getLevelResult = async (token, BotfatherChannelId) => {
   // Get message from specific channel with limit

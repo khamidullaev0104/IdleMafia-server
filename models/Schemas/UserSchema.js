@@ -33,6 +33,14 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  Allow: {
+    type: String,
+    default: 'false',
+  },
+  PasswordChangeRequire: {
+    type: String,
+    default: 'false',
+  },
 });
 
 module.exports = mongoose.model('user', UserSchema);
