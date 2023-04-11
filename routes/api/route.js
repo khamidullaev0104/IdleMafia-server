@@ -2,7 +2,11 @@ const express = require('express');
 const router = express.Router();
 const { check, validationResult } = require('express-validator');
 const { getTotalDefense, getTotalAttack } = require('../../common/defense');
-const { ERROR_GET_CHANNELID, ERROR_EMPTY_DB } = require('../../config/string');
+const {
+  ERROR_GET_CHANNELID,
+  ERROR_EMPTY_DB,
+  ERROR_GET_LEVEL,
+} = require('../../config/string');
 const {
   getLevelResult,
   getLevelResultFromDB,
@@ -42,6 +46,10 @@ const { loadCaposList } = require('../../common/capo');
 const { CHANNEL_ID, BOTFATHER_ID, TOKEN } = require('../../config/constants');
 const { SUCCESS_USERREMOVE } = require('../../config/string');
 const CapoSchema = require('../../models/Schemas/CapoSchema');
+const {
+  axiosPostToChannel,
+  axiosGetChannel,
+} = require('../../common/axiosFunctions');
 
 //////////////////////////////////////// Functions ////////////////////////////////////////
 
@@ -230,27 +238,6 @@ router.post('/sendMessageOnly', async (req, res) => {
     return res
       .status(200)
       .json({ status: false, message: 'sendMessageOnly error', err });
-  }
-});
-
-router.post('/getLevel', async (req, res) => {
-  try {
-    await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, 'level');
-    await new Promise((r) => setTimeout(r, 300));
-    const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
-    if (BotfatherChannelId === undefined)
-      return res
-        .status(200)
-        .json({ status: false, message: ERROR_GET_CHANNELID });
-    const data = await getLevelResult(TOKEN, BotfatherChannelId);
-    if (typeof data !== 'object')
-      return res.status(200).json({ status: false, message: data });
-    return res.status(200).json({ status: true, message: 'Success', data });
-  } catch (err) {
-    console.log(err);
-    return res
-      .status(200)
-      .json({ status: false, message: 'getLevel error', err });
   }
 });
 
@@ -600,19 +587,16 @@ router.post(
   }
 );
 
-
 router.get('/level', async (req, res) => {
   try {
-    const {date} = req.body;
+    const { date } = req.body;
     const data = await getLevelResultFromDB(date);
-    if (typeof data !== 'object')
-      return errorResponse(res, data);
+    if (typeof data !== 'object') return errorResponse(res, data);
 
     return successResponse(res, data);
   } catch (err) {
     return errorResponse(res, 'Failed to get level result from DB', err);
   }
 });
-
 
 module.exports = router;

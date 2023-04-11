@@ -11,6 +11,7 @@ module.exports = Object.freeze({
   ERROR_SERVER: 'Server Error',
   ERROR_BUILDING_COMMAND: 'Can not find message from building command',
   ERROR_GET_CHANNELID: 'Channel Error- Can not get channel ID',
+  ERROR_GET_LEVEL: 'Failed to get level data',
   ERROR_ACCESS_DM: 'Channel Error- Can not access in DM',
   ERROR_EMPTY_DB: 'Empty DB',
   INVALID_USERID: 'Invalid User ID',
