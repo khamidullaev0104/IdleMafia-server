@@ -6,6 +6,7 @@ const UserSchema = require('../models/Schemas/UserSchema');
 const {
   ERROR_USER_EXIST,
   ERROR_SERVER,
+  ERROR_USER_NOTALLOW,
   PERMISSION_USER,
   PERMISSION_ADMIN,
   SUCCESS_USERREMOVE,
@@ -15,6 +16,8 @@ const {
   INVALID_CURRENTPASSWORD,
   INVALID_NEWPASSWORD_DIFFERENCE,
   INVALID_CURRENTPASSWORD_SMALL,
+  ALLOW,
+  NOTALLOW,
 } = require('../config/string');
 
 async function register(username, email, password, timezone) {
@@ -35,9 +38,15 @@ async function register(username, email, password, timezone) {
     );
 
     let permission;
+    let allow;
     user = await UserSchema.findOne({ Permission: PERMISSION_ADMIN });
-    if (user) permission = PERMISSION_USER;
-    else permission = PERMISSION_ADMIN;
+    if (user) {
+      permission = PERMISSION_USER;
+      allow = NOTALLOW;
+    } else {
+      permission = PERMISSION_ADMIN;
+      allow = ALLOW;
+    }
 
     user = new UserSchema({
       Username: username,
@@ -46,6 +55,7 @@ async function register(username, email, password, timezone) {
       Password: password,
       Timezone: timezone,
       Permission: permission,
+      Allow: allow,
     });
 
     const salt = await bcrypt.genSalt(10);
@@ -71,6 +81,8 @@ async function login(username, password) {
 
     const isMatch = await bcrypt.compare(password, user.Password);
     if (!isMatch) return INVALID_PASSWORD;
+
+    if (user.Allow === 'false') return ERROR_USER_NOTALLOW;
 
     const payload = {
       user: {
@@ -150,10 +162,78 @@ async function changeUserInfo(info) {
   }
 }
 
+async function resetPassword(id, password) {
+  try {
+    let user = await UserSchema.findById(id);
+    if (!user) return INVALID_USERID;
+
+    const salt = await bcrypt.genSalt(10);
+    user.Password = await bcrypt.hash(password, salt);
+
+    return await user.save();
+  } catch (err) {
+    console.error('resetPassword: ', err.message);
+    return INVALID_USERID;
+  }
+}
+
+async function setPermission(id, permission) {
+  try {
+    let user = await UserSchema.findById(id);
+    if (!user) return INVALID_USERID;
+
+    switch (permission) {
+      case PERMISSION_USER:
+        user.Permission = PERMISSION_USER;
+        break;
+      case PERMISSION_ADMIN:
+        user.Permission = PERMISSION_ADMIN;
+        break;
+      default:
+        user.Permission = PERMISSION_USER;
+    }
+
+    return await user.save();
+  } catch (err) {
+    console.error('setPermission: ', err.message);
+    return INVALID_USERID;
+  }
+}
+
+async function setAllow(id, allow) {
+  try {
+    let user = await UserSchema.findById(id);
+    if (!user) return INVALID_USERID;
+
+    user.Allow = allow;
+
+    return await user.save();
+  } catch (err) {
+    console.error('setAllow: ', err.message);
+    return INVALID_USERID;
+  }
+}
+
+async function isAdmin(id) {
+  try {
+    let user = await UserSchema.findById(id);
+    if (!user) return INVALID_USERID;
+
+    return user.Permission;
+  } catch (err) {
+    console.error('setAllow: ', err.message);
+    return INVALID_USERID;
+  }
+}
+
 module.exports = {
   register,
   login,
   getUserById,
-  removeUserbyID,
   changeUserInfo,
+  removeUserbyID,
+  resetPassword,
+  setPermission,
+  setAllow,
+  isAdmin,
 };

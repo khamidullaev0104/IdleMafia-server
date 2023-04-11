@@ -84,7 +84,6 @@ async function OnDbConnected() {
           });
           await NewCapo.save();
           if (process.env.DEBUG ?? false) console.log(`New capo saved`);
-
         } else {
           fs.unlinkSync(imagePath);
         }

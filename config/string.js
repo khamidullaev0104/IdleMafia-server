@@ -7,13 +7,15 @@ module.exports = Object.freeze({
   END_OF_POINT_LOOP: 'Gang points, Nemesis attack damages',
 
   OFF_SEASON: 'Off season',
-  ERROR_USER_EXIST: 'User already exists',
+  ERROR_USER_EXIST: 'User with such email/username already exists',
+  ERROR_USER_NOTALLOW: 'You are not allowed yet.',
   ERROR_SERVER: 'Server Error',
   ERROR_BUILDING_COMMAND: 'Can not find message from building command',
   ERROR_GET_CHANNELID: 'Channel Error- Can not get channel ID',
   ERROR_GET_LEVEL: 'Failed to get level data',
   ERROR_ACCESS_DM: 'Channel Error- Can not access in DM',
   ERROR_EMPTY_DB: 'Empty DB',
+  ERROR_PERMISSION_ADMIN: 'You do not have admin permission',
   INVALID_USERID: 'Invalid User ID',
   INVALID_USERNAME: 'Invalid Credentials-Username can not found',
   INVALID_PASSWORD: 'Invalid Credentials-Password different',
@@ -24,6 +26,8 @@ module.exports = Object.freeze({
 
   PERMISSION_USER: 'user',
   PERMISSION_ADMIN: 'admin',
+  ALLOW: 'true',
+  NOTALLOW: 'false',
 
   SUCCESS_USERREMOVE: 'User Remove success',
 });

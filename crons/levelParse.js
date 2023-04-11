@@ -3,7 +3,7 @@ const getChannelID = require('../common/getChannelID');
 require('dotenv').config();
 
 const { axiosPostToChannel } = require('../common/axiosFunctions');
-const {getLevelResult} = require("../controller/level");
+const { getLevelResult } = require('../controller/level');
 
 async function OnDbConnected() {
   if (process.env.DEBUG ?? false) console.log(`OnDbConnected`);
@@ -12,19 +12,17 @@ async function OnDbConnected() {
   await new Promise((r) => setTimeout(r, 300));
 
   const BotfatherChannelId = await getChannelID(
-      process.env.DISCORD_TOKEN,
-      process.env.BOTFATHER_ID
+    process.env.DISCORD_TOKEN,
+    process.env.BOTFATHER_ID
   );
 
-  if (BotfatherChannelId === undefined){
-    if (process.env.DEBUG ?? false) console.log(`Problem with BotfatherChannelId`);
+  if (BotfatherChannelId === undefined) {
+    if (process.env.DEBUG ?? false)
+      console.log(`Problem with BotfatherChannelId`);
     process.exit();
   }
 
-  await getLevelResult(
-      process.env.DISCORD_TOKEN,
-      BotfatherChannelId
-  );
+  await getLevelResult(process.env.DISCORD_TOKEN, BotfatherChannelId);
 
   process.exit();
 }
