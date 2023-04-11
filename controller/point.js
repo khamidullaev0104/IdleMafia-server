@@ -18,10 +18,13 @@ const getPointResult = async (token, BotfatherChannelId) => {
           },
         }
       );
-      datas.push(...res_msg.data[i].embeds[0].fields);
+      const fields = res_msg.data[i].embeds[0]?.fields;
+      if (fields) {
+        datas.push(...fields);
+      }
       if (
-        typeof res_msg.data[i].embeds[0].description !== 'undefined' &&
-        res_msg.data[i].embeds[0].description.includes(END_OF_POINT_LOOP)
+        typeof res_msg.data[i].embeds[0]?.description !== 'undefined' &&
+        res_msg.data[i].embeds[0]?.description.includes(END_OF_POINT_LOOP)
       )
         break;
     }
