@@ -18,6 +18,7 @@ const {
   INVALID_CURRENTPASSWORD_SMALL,
   ALLOW,
   NOTALLOW,
+  ERROR_USER_INFO,
 } = require('../config/string');
 
 async function register(username, email, password, timezone) {
@@ -76,7 +77,7 @@ async function register(username, email, password, timezone) {
 
 async function login(username, password) {
   try {
-    let user = await UserSchema.findOne({ Username: username });
+    const user = await UserSchema.findOne({ Username: username });
     if (!user) return INVALID_USERNAME;
 
     const isMatch = await bcrypt.compare(password, user.Password);
@@ -125,6 +126,18 @@ async function getUserById(id) {
   }
 }
 
+async function getUsers() {
+  try {
+    const users = await UserSchema.find().select('-password');
+    if (!users) return ERROR_SERVER;
+
+    return users;
+  } catch (err) {
+    console.error('getUsers error: ', err.message);
+    return ERROR_SERVER;
+  }
+}
+
 async function removeUserbyID(id) {
   try {
     const user = await UserSchema.findById(id);
@@ -163,59 +176,48 @@ async function changeUserInfo(info) {
   }
 }
 
-async function resetPassword(id, password) {
+async function changeUserInfoByAdmin(newUser) {
   try {
-    let user = await UserSchema.findById(id);
+    let user = await UserSchema.findById(newUser._id);
     if (!user) return INVALID_USERID;
 
-    const salt = await bcrypt.genSalt(10);
-    user.Password = await bcrypt.hash(password, salt);
-
-    return await user.save();
-  } catch (err) {
-    console.error('resetPassword: ', err.message);
-    return INVALID_USERID;
-  }
-}
-
-async function setPermission(id, permission) {
-  try {
-    let user = await UserSchema.findById(id);
-    if (!user) return INVALID_USERID;
-
-    switch (permission) {
-      case PERMISSION_USER:
-        user.Permission = PERMISSION_USER;
-        break;
+    switch (newUser.Permission) {
       case PERMISSION_ADMIN:
         user.Permission = PERMISSION_ADMIN;
         break;
-      default:
+      case PERMISSION_USER:
         user.Permission = PERMISSION_USER;
+        break;
+      default:
+        return (
+          ERROR_USER_INFO + 'ERROR INFO- Permission: ' + newUser.Permission
+        );
     }
 
+    switch (newUser.Allow) {
+      case ALLOW:
+        user.Allow = ALLOW;
+        break;
+      case NOTALLOW:
+        user.Allow = NOTALLOW;
+        break;
+      default:
+        return ERROR_USER_INFO + 'ERROR INFO- Allow: ' + newUser.Allow;
+    }
+
+    if (newUser.Password !== '') {
+      user.PasswordChangeRequire = 'false';
+      const salt = await bcrypt.genSalt(10);
+      user.Password = await bcrypt.hash(newUser.Password, salt);
+    }
     return await user.save();
   } catch (err) {
-    console.error('setPermission: ', err.message);
+    console.error('changeUserInfoByAdmin: ', err.message);
     return INVALID_USERID;
   }
 }
 
-async function setAllow(id, allow) {
-  try {
-    let user = await UserSchema.findById(id);
-    if (!user) return INVALID_USERID;
-
-    user.Allow = allow;
-
-    return await user.save();
-  } catch (err) {
-    console.error('setAllow: ', err.message);
-    return INVALID_USERID;
-  }
-}
-
-async function isAdmin(id) {
+async function getPermission(id) {
   try {
     let user = await UserSchema.findById(id);
     if (!user) return INVALID_USERID;
@@ -231,10 +233,9 @@ module.exports = {
   register,
   login,
   getUserById,
+  getUsers,
   changeUserInfo,
   removeUserbyID,
-  resetPassword,
-  setPermission,
-  setAllow,
-  isAdmin,
+  getPermission,
+  changeUserInfoByAdmin,
 };

@@ -33,12 +33,11 @@ const {
   login,
   register,
   getUserById,
+  getUsers,
   changeUserInfo,
   removeUserbyID,
-  resetPassword,
-  setPermission,
-  setAllow,
-  isAdmin,
+  changeUserInfoByAdmin,
+  getPermission,
 } = require('../../common/auth');
 const { loadBuildingModule } = require('../../common/countBuildings');
 const {
@@ -111,6 +110,27 @@ router.post('/getUserbyId', async (req, res) => {
     return res
       .status(500)
       .send({ status: false, message: 'getUserbyId error', err });
+  }
+});
+
+router.post('/getUsers', async (req, res) => {
+  try {
+    const permission = await getPermission(req.body.id);
+    if (permission !== PERMISSION_ADMIN)
+      return res
+        .status(200)
+        .json({ status: false, message: ERROR_PERMISSION_ADMIN });
+    const ret = await getUsers();
+    if (typeof ret !== 'object')
+      return res.status(200).json({ status: false, message: ret });
+    return res
+      .status(200)
+      .json({ status: true, message: 'getUserbyId success', data: ret });
+  } catch (err) {
+    console.error(err.message);
+    return res
+      .status(500)
+      .send({ status: false, message: 'getUsers error', err });
   }
 });
 
@@ -576,7 +596,7 @@ router.post(
 
 router.get('/level', async (req, res) => {
   try {
-    const data= await getLevelResultFromDB(req.query.date?? '-1');
+    const data = await getLevelResultFromDB(req.query.date ?? '-1');
     if (typeof data !== 'object') return errorResponse(res, data);
 
     return successResponse(res, data);
@@ -585,77 +605,41 @@ router.get('/level', async (req, res) => {
   }
 });
 
-router.post('/resetPassword', async (req, res) => {
+router.post('/changeUserInfoByAdmin', async (req, res) => {
   try {
-    const permission = await isAdmin(req.body.id);
-    if (permission === PERMISSION_ADMIN)
+    const { id, user } = req.body;
+    const permission = await getPermission(id);
+    if (permission !== PERMISSION_ADMIN)
       return res
         .status(200)
         .json({ status: false, message: ERROR_PERMISSION_ADMIN });
-    const ret = await resetPassword(req.body.user.id, req.body.user.password);
+    const ret = await changeUserInfoByAdmin(user);
     if (typeof ret !== 'object')
       return res.status(200).json({ status: false, message: ret });
     return res
       .status(200)
-      .json({ status: true, message: 'resetPassword success', data: ret });
+      .json({
+        status: true,
+        message: 'changeUserInfoByAdmin success',
+        data: ret,
+      });
   } catch (err) {
     console.error(err.message);
     return res
       .status(500)
-      .send({ status: false, message: 'resetPassword error', err });
+      .send({ status: false, message: 'changeUserInfoByAdmin error', err });
   }
 });
 
-router.post('/setPermission', async (req, res) => {
+router.post('/removeUserByAdmin', async (req, res) => {
   try {
-    const permission = await isAdmin(req.body.id);
-    if (permission === PERMISSION_ADMIN)
+    const { id, userID } = req.body;
+    const permission = await getPermission(id);
+    if (permission !== PERMISSION_ADMIN)
       return res
         .status(200)
         .json({ status: false, message: ERROR_PERMISSION_ADMIN });
-    const ret = await setPermission(req.body.user.id, req.body.user.permission);
-    if (typeof ret !== 'object')
-      return res.status(200).json({ status: false, message: ret });
-    return res
-      .status(200)
-      .json({ status: true, message: 'setPermission success', data: ret });
-  } catch (err) {
-    console.error(err.message);
-    return res
-      .status(500)
-      .send({ status: false, message: 'setPermission error', err });
-  }
-});
-
-router.post('/setAllow', async (req, res) => {
-  try {
-    const permission = await isAdmin(req.body.id);
-    if (permission === PERMISSION_ADMIN)
-      return res
-        .status(200)
-        .json({ status: false, message: ERROR_PERMISSION_ADMIN });
-    const ret = await setAllow(req.body.user.id, req.body.user.allow);
-    if (typeof ret !== 'object')
-      return res.status(200).json({ status: false, message: ret });
-    return res
-      .status(200)
-      .json({ status: true, message: 'setAllow success', data: ret });
-  } catch (err) {
-    console.error(err.message);
-    return res
-      .status(500)
-      .send({ status: false, message: 'setAllow error', err });
-  }
-});
-
-router.post('/removeUser', async (req, res) => {
-  try {
-    const permission = await isAdmin(req.body.id);
-    if (permission === PERMISSION_ADMIN)
-      return res
-        .status(200)
-        .json({ status: false, message: ERROR_PERMISSION_ADMIN });
-    const ret = await removeUserbyID(req.body.user.id);
+    const ret = await removeUserbyID(userID);
     if (ret === SUCCESS_USERREMOVE)
       return res.status(200).json({ status: true, message: ret });
     return res.status(200).json({ status: false, message: ret });

@@ -9,6 +9,7 @@ module.exports = Object.freeze({
   OFF_SEASON: 'Off season',
   ERROR_USER_EXIST: 'User with such email/username already exists',
   ERROR_USER_NOTALLOW: 'You are not allowed yet.',
+  ERROR_USER_INFO: 'User info is not correct. ',
   ERROR_SERVER: 'Server Error',
   ERROR_BUILDING_COMMAND: 'Can not find message from building command',
   ERROR_GET_CHANNELID: 'Channel Error- Can not get channel ID',
