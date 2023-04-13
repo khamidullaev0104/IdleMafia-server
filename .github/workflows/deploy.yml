@@ -53,9 +53,10 @@ jobs:
       #   run: pm2 delete all
       # - name: Logs
       #   run: cat ~/.pm2/pm2.log
+      #  line for test commit
 
   deployment:
-    if: github.ref == 'refs/heads/issue/github_ci' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event.pull_request.merged == true)
     needs: lint
     runs-on: ubuntu-latest
     steps:
@@ -69,6 +70,7 @@ jobs:
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           TARGET: ${{ secrets.REMOTE_TARGET }}
+          EXCLUDE: '/data/, /level-img/'
           SCRIPT_AFTER: |
             source /etc/profile.d/nvm.sh
             cd ${{ secrets.REMOTE_TARGET }}
