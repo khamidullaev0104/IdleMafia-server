@@ -19,6 +19,8 @@ const {
   ALLOW,
   NOTALLOW,
   ERROR_USER_INFO,
+  NO_USER,
+  WARNING_ALREADY_SENT_PASSWORDCHANGEREQUEST,
 } = require('../config/string');
 
 async function register(username, email, password, timezone) {
@@ -129,7 +131,21 @@ async function getUserById(id) {
 async function getUsers() {
   try {
     const users = await UserSchema.find().select('-password');
-    if (!users) return ERROR_SERVER;
+    if (!users || users.length === 0) return NO_USER;
+
+    return users;
+  } catch (err) {
+    console.error('getUsers error: ', err.message);
+    return ERROR_SERVER;
+  }
+}
+
+async function getUsersForNotification() {
+  try {
+    const users = await UserSchema.find({
+      PasswordChangeRequire: 'true',
+    }).select('-password');
+    if (!users || users.length === 0) return NO_USER;
 
     return users;
   } catch (err) {
@@ -224,18 +240,34 @@ async function getPermission(id) {
 
     return user.Permission;
   } catch (err) {
-    console.error('setAllow: ', err.message);
+    console.error('getPermission: ', err.message);
     return INVALID_USERID;
   }
 }
+async function setPasswordChangeRequest(username) {
+  try {
+    let user = await UserSchema.findOne({ Username: username });
+    if (!user) return INVALID_USERNAME;
+    if (user.PasswordChangeRequire === 'true')
+      return WARNING_ALREADY_SENT_PASSWORDCHANGEREQUEST;
+    user.PasswordChangeRequire = 'true';
 
+    await user.save();
+    return true;
+  } catch (err) {
+    console.error('setPasswordChangeRequest: ', err.message);
+    return ERROR_SERVER;
+  }
+}
 module.exports = {
   register,
   login,
   getUserById,
   getUsers,
+  getUsersForNotification,
   changeUserInfo,
   removeUserbyID,
   getPermission,
   changeUserInfoByAdmin,
+  setPasswordChangeRequest,
 };

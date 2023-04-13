@@ -7,6 +7,8 @@ const {
   ERROR_EMPTY_DB,
   PERMISSION_ADMIN,
   ERROR_PERMISSION_ADMIN,
+  SUCCESS_REGISTER_BUT_NOT_ALLOW,
+  SUCCESS_SENT_PASSWORDCHANGEREQUEST,
 } = require('../../config/string');
 const {
   getLevelResult,
@@ -38,6 +40,8 @@ const {
   removeUserbyID,
   changeUserInfoByAdmin,
   getPermission,
+  getUsersForNotification,
+  setPasswordChangeRequest,
 } = require('../../common/auth');
 const { loadBuildingModule } = require('../../common/countBuildings');
 const {
@@ -190,7 +194,11 @@ router.post(
 
       return res
         .status(200)
-        .json({ status: true, message: 'Registration success', data: ret });
+        .json({
+          status: true,
+          message: SUCCESS_REGISTER_BUT_NOT_ALLOW,
+          data: ret,
+        });
     } catch (err) {
       console.log(err);
       return res
@@ -616,13 +624,11 @@ router.post('/changeUserInfoByAdmin', async (req, res) => {
     const ret = await changeUserInfoByAdmin(user);
     if (typeof ret !== 'object')
       return res.status(200).json({ status: false, message: ret });
-    return res
-      .status(200)
-      .json({
-        status: true,
-        message: 'changeUserInfoByAdmin success',
-        data: ret,
-      });
+    return res.status(200).json({
+      status: true,
+      message: 'changeUserInfoByAdmin success',
+      data: ret,
+    });
   } catch (err) {
     console.error(err.message);
     return res
@@ -648,6 +654,63 @@ router.post('/removeUserByAdmin', async (req, res) => {
     return res
       .status(500)
       .send({ status: false, message: 'removeUser error', err });
+  }
+});
+
+router.post('/isAdmin', async (req, res) => {
+  try {
+    const { id } = req.body;
+    const permission = await getPermission(id);
+    if (permission !== PERMISSION_ADMIN)
+      return res.status(200).json({ status: false, data: false });
+    return res.status(200).json({ status: true, data: true });
+  } catch (err) {
+    console.error(err.message);
+    return res
+      .status(500)
+      .send({ status: false, message: 'removeUser error', err });
+  }
+});
+
+router.post('/PasswordChangeRequest', async (req, res) => {
+  try {
+    const { username } = req.body;
+    const ret = await setPasswordChangeRequest(username);
+    if (ret === true)
+      return res
+        .status(200)
+        .json({ status: true, message: SUCCESS_SENT_PASSWORDCHANGEREQUEST });
+    return res.status(200).json({ status: false, message: ret });
+  } catch (err) {
+    console.error(err.message);
+    return res
+      .status(500)
+      .send({ status: false, message: 'PasswordChangeRequest error', err });
+  }
+});
+
+router.post('/getUsersForNotification', async (req, res) => {
+  try {
+    const permission = await getPermission(req.body.id);
+    if (permission !== PERMISSION_ADMIN)
+      return res
+        .status(200)
+        .json({ status: false, message: ERROR_PERMISSION_ADMIN });
+    const ret = await getUsersForNotification();
+    if (typeof ret !== 'object')
+      return res.status(200).json({ status: false, message: ret });
+    return res
+      .status(200)
+      .json({
+        status: true,
+        message: 'getUsersForNotification success',
+        data: ret,
+      });
+  } catch (err) {
+    console.error(err.message);
+    return res
+      .status(500)
+      .send({ status: false, message: 'getUsersForNotification error', err });
   }
 });
 

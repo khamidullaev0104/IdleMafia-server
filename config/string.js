@@ -18,12 +18,16 @@ module.exports = Object.freeze({
   ERROR_EMPTY_DB: 'Empty DB',
   ERROR_PERMISSION_ADMIN: 'You do not have admin permission',
   INVALID_USERID: 'Invalid User ID',
-  INVALID_USERNAME: 'Invalid Credentials-Username can not found',
+  INVALID_USERNAME: 'Invalid Credentials-Username can not be found',
   INVALID_PASSWORD: 'Invalid Credentials-Password different',
   INVALID_CURRENTPASSWORD: 'Current Password different',
   INVALID_NEWPASSWORD_DIFFERENCE:
     'New Password is not different Confirm Password',
   INVALID_CURRENTPASSWORD_SMALL: 'Password must be more than 6 letters',
+  NO_USER: 'There is not user.',
+
+  WARNING_ALREADY_SENT_PASSWORDCHANGEREQUEST:
+    'You sent Reset Password Request already.',
 
   PERMISSION_USER: 'user',
   PERMISSION_ADMIN: 'admin',
@@ -31,4 +35,7 @@ module.exports = Object.freeze({
   NOTALLOW: 'false',
 
   SUCCESS_USERREMOVE: 'User Remove success',
+  SUCCESS_REGISTER_BUT_NOT_ALLOW:
+    'Registration success. Admin will allow your registration soon.',
+  SUCCESS_SENT_PASSWORDCHANGEREQUEST: 'Reset Password request sent',
 });
