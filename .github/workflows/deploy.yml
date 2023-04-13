@@ -1,0 +1,88 @@
+name: Check
+on: [push, pull_request]
+env:
+  SERVER_PORT: 4000
+  MONGO_DB_TAG: 3.2.1
+  DEBUG: true
+  USE_CACHE: true
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 10
+      matrix:
+        version: [16, 18]
+        mongodb-version: ['4.2', '4.4', '5.0', '6.0']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      # - uses: actions/setup-node@v3
+      #   with:
+      #     node-version: ${{ matrix.version }}
+      # - uses: supercharge/mongodb-github-action@1.8.0
+      #   with:
+      #     mongodb-version: ${{ matrix.mongodb-version }}
+
+      # - name: Install deps
+      #   run: npm i
+      # - name: Install pm2
+      #   run: npm i -g pm2
+      # - name: Lint
+      #   run: npm run lint
+      # - name: Run server
+      #   run: pm2 start npm -- start
+      # - name: Wait
+      #   run: sleep 5
+
+      # - name: test getAttack api
+      #   run: curl --location --request POST 'http:/127.0.0.1:5000/getAttack' --silent -v 2>&1 | grep 'HTTP/1.1 200'
+      # - name: test defense/total api
+      #   run: curl --location '127.0.0.1:5000/defense/total' --silent -v 2>&1 | grep 'HTTP/1.1 200'
+      # - name: test attack/total api
+      #   run: curl --location '127.0.0.1:5000/attack/total' --silent -v 2>&1 | grep 'HTTP/1.1 200'
+      # - name: test attack/total api
+      #   run: curl --location '127.0.0.1:5000/capos' --silent -v 2>&1 | grep 'HTTP/1.1 200'
+      # - name: test capos/update
+      #   run: curl --location --request POST '127.0.0.1:5000/capos/patch' --silent -v 2>&1 | grep 'HTTP/1.1 200'
+      # - name: test capos/delete
+      #   run: curl --location --request POST '127.0.0.1:5000/capos/delete' --silent -v 2>&1 | grep 'HTTP/1.1 200'
+      # - name: test level
+      #   run: curl --location --request GET '127.0.0.1:5000/level' --silent -v 2>&1 | grep 'HTTP/1.1 200'
+
+      # - name: Stop server
+      #   run: pm2 delete all
+      # - name: Logs
+      #   run: cat ~/.pm2/pm2.log
+      #  line for test commit
+
+  deployment:
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event.pull_request.merged == true)
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Deploy
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+          ARGS: '-rlz -c --delete'
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          TARGET: ${{ secrets.REMOTE_TARGET }}
+          EXCLUDE: '/data/, /level-img/'
+          SCRIPT_AFTER: |
+            source /etc/profile.d/nvm.sh
+            cd ${{ secrets.REMOTE_TARGET }}
+            echo "SERVER_PORT=${{ env.SERVER_PORT }}" > .env
+            echo "MONGO_DB_TAG=${{ env.MONGO_DB_TAG }}" >> .env
+            echo "DEBUG=${{ env.DEBUG }}" >> .env
+            echo "PATH_ROOT=${{ secrets.REMOTE_TARGET }}" >> .env
+            echo "USE_CACHE=${{ env.USE_CACHE }}" >> .env
+            echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" >> .env
+            echo "BOTFATHER_ID=${{ secrets.BOTFATHER_ID }}" >> .env
+            echo "CHANNEL_ID=${{ secrets.CHANNEL_ID }}" >> .env
+
+            npm i
+            pm2 delete "localhost:4000" 2> /dev/null
+            pm2 start ./server.js --name "localhost:4000"
