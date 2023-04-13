@@ -53,6 +53,7 @@ jobs:
       #   run: pm2 delete all
       # - name: Logs
       #   run: cat ~/.pm2/pm2.log
+      #  line for test commit
 
   deployment:
     if: github.ref == 'refs/heads/issue/github_ci' && (github.event_name == 'push' || github.event.pull_request.merged == true)
