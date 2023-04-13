@@ -56,7 +56,7 @@ jobs:
       #  line for test commit
 
   deployment:
-    if: github.ref == 'refs/heads/issue/github_ci' && (github.event_name == 'push' || github.event.pull_request.merged == true)
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event.pull_request.merged == true)
     needs: lint
     runs-on: ubuntu-latest
     steps:
