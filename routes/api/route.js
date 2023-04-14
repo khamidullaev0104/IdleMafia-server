@@ -212,7 +212,7 @@ router.post('/createMessage', async (req, res) => {
   const { message } = req.body;
   try {
     await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, message);
-    await new Promise((r) => setTimeout(r, 300));
+    await new Promise((r) => setTimeout(r, 5000));
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     if (BotfatherChannelId === undefined)
       return res
@@ -279,7 +279,7 @@ router.post('/getLevelWithoutSend', async (req, res) => {
 router.post('/getPoint', async (req, res) => {
   try {
     await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, 'point');
-    await new Promise((r) => setTimeout(r, 300));
+    await new Promise((r) => setTimeout(r, 5000));
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     if (BotfatherChannelId === undefined)
       return res.status(200).json({
@@ -321,7 +321,7 @@ router.post('/getPointWithoutSend', async (req, res) => {
 router.post('/getAttack', async (req, res) => {
   try {
     await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, 'attack');
-    await new Promise((r) => setTimeout(r, 300));
+    await new Promise((r) => setTimeout(r, 5000));
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     if (BotfatherChannelId === undefined)
       return res.status(200).json({
@@ -375,7 +375,7 @@ router.post('/getAttackWithoutSend', async (req, res) => {
 router.post('/getBuilding', async (req, res) => {
   try {
     await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, 'building');
-    await new Promise((r) => setTimeout(r, 300));
+    await new Promise((r) => setTimeout(r, 5000));
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     if (BotfatherChannelId === undefined)
       return res.status(200).json({
@@ -458,6 +458,7 @@ router.post('/getBuildingResultFromDB', async (req, res) => {
       .json({ status: false, message: 'getBuildingResultFromDB error', err });
   }
 });
+
 
 router.post('/getTotalMembers', async (req, res) => {
   try {
