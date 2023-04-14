@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { check, validationResult } = require('express-validator');
 const { getTotalDefense, getTotalAttack } = require('../../common/defense');
+const WAITTIME_BEFORE_PARSE = 10*1000;
 const {
   ERROR_GET_CHANNELID,
   ERROR_EMPTY_DB,
@@ -212,7 +213,7 @@ router.post('/createMessage', async (req, res) => {
   const { message } = req.body;
   try {
     await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, message);
-    await new Promise((r) => setTimeout(r, 5000));
+    await new Promise((r) => setTimeout(r, WAITTIME_BEFORE_PARSE));
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     if (BotfatherChannelId === undefined)
       return res
@@ -279,7 +280,7 @@ router.post('/getLevelWithoutSend', async (req, res) => {
 router.post('/getPoint', async (req, res) => {
   try {
     await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, 'point');
-    await new Promise((r) => setTimeout(r, 5000));
+    await new Promise((r) => setTimeout(r, WAITTIME_BEFORE_PARSE));
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     if (BotfatherChannelId === undefined)
       return res.status(200).json({
@@ -321,7 +322,7 @@ router.post('/getPointWithoutSend', async (req, res) => {
 router.post('/getAttack', async (req, res) => {
   try {
     await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, 'attack');
-    await new Promise((r) => setTimeout(r, 5000));
+    await new Promise((r) => setTimeout(r, WAITTIME_BEFORE_PARSE));
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     if (BotfatherChannelId === undefined)
       return res.status(200).json({
@@ -375,7 +376,7 @@ router.post('/getAttackWithoutSend', async (req, res) => {
 router.post('/getBuilding', async (req, res) => {
   try {
     await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, 'building');
-    await new Promise((r) => setTimeout(r, 5000));
+    await new Promise((r) => setTimeout(r, WAITTIME_BEFORE_PARSE));
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     if (BotfatherChannelId === undefined)
       return res.status(200).json({
