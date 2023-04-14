@@ -1,6 +1,8 @@
 #!/bin/bash
 source "../output.sh"
-CRONS_DIR=../../crons
+CRONS_DIR=./crons
+
+cd /home/gangwars/www/server
 
 print_title "Level date update"
 node "$CRONS_DIR/levelParse.js"
