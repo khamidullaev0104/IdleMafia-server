@@ -489,24 +489,6 @@ router.post('/getRankByFP', async (req, res) => {
   }
 });
 
-router.post('/getTotalMembers', async (req, res) => {
-  try {
-    const data = await getTotalNumberOfGangMember();
-    if (typeof data !== 'object')
-      return res.status(200).json({ status: false, message: ERROR_EMPTY_DB });
-    return res.status(200).json({
-      status: true,
-      message: 'Success',
-      data: data ? data.Datas.length : 0,
-    });
-  } catch (err) {
-    console.log(err);
-    return res
-      .status(200)
-      .json({ status: false, message: 'getTotalMembers error', err });
-  }
-});
-
 router.get('/defense/total', async (req, res) => {
   try {
     const data = await getTotalDefense();
