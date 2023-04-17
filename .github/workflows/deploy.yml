@@ -1,6 +1,7 @@
 name: Check
 on: [push, pull_request]
 env:
+  CLIENT_BASE_URL: 'https://gangwarsai.solvve.com'
   SERVER_PORT: 4000
   MONGO_DB_TAG: 3.2.1
   DEBUG: true
