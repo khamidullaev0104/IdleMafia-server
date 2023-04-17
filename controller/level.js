@@ -14,7 +14,7 @@ const getLevelResult = async (token, BotfatherChannelId, userId) => {
       [['limit', i + 1]],
       userId
     );
-    const img = res_msg.data[i].attachments[0].url;
+    const img = res_msg.data?.[i]?.attachments?.[0]?.url;
 
     let dataLevel = await getLevelCommand(timeNow, i, img);
     datas.push(...dataLevel);

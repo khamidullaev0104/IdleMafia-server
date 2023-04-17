@@ -56,9 +56,15 @@ async function getTokenFromProfile(userId) {
   return user.DiscordAuthData?.accessToken;
 }
 
+async function getUserDiscordToken(userId) {
+  const discordToken =
+    process.env.DISCORD_TOKEN || (await getTokenFromProfile(userId));
+  return discordToken;
+}
+
 module.exports = {
   authorizeWithDiscord,
   saveAuthData,
   removeAuthData,
-  getTokenFromProfile,
+  getUserDiscordToken,
 };

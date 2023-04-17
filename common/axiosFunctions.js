@@ -1,13 +1,12 @@
 const axios = require('axios');
 const { getChannelUrl } = require('./getChannelUrl');
-const { getTokenFromProfile } = require('./discord');
+const { getUserDiscordToken } = require('./discord');
 
 const Cache = require('ttl-file-cache');
 const axiosCache = new Cache({ dir: './data/cache' });
 
 async function headers(userId) {
-  const discordToken =
-    process.env.DISCORD_TOKEN || (await getTokenFromProfile(userId));
+  const discordToken = await getUserDiscordToken(userId);
 
   return {
     authorization: discordToken ?? 'NO TOKEN ',
