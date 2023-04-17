@@ -126,6 +126,7 @@ async function getDatesFromCommandDB(type) {
         return ERROR_COMMAND_TYPE;
     }
     if (res === null) ERROR_EMPTY_DB;
+    if (typeof res === 'object' && res.length === 0) ERROR_EMPTY_DB;
     return res;
   } catch (err) {
     console.error('getDatesFromCommandDB error: ', err.message);

@@ -1,6 +1,6 @@
 const LevelSchema = require('../models/Schemas/LevelSchema');
 const getLevelCommand = require('../common/parseImage');
-const { END_OF_LEVEL_LOOP } = require('../config/string');
+const { END_OF_LEVEL_LOOP, ERROR_EMPTY_DB } = require('../config/string');
 const { axiosGetChannel } = require('../common/axiosFunctions');
 
 const getLevelResult = async (token, BotfatherChannelId, userId) => {
@@ -33,8 +33,11 @@ const getLevelResult = async (token, BotfatherChannelId, userId) => {
 
 const getLevelResultFromDB = async (date) => {
   try {
-    if (date === '-1') return await LevelSchema.findOne().sort({ _id: -1 });
-    else return await LevelSchema.find({ date: { $gte: date } });
+    let res;
+    if (date === '-1') res = await LevelSchema.findOne().sort({ _id: -1 });
+    else res = await LevelSchema.findOne({ Date: { $gte: new Date(date) } });
+    if (!res) return ERROR_EMPTY_DB;
+    return res;
   } catch (err) {
     console.log('getLevelResultFromDB ERROR:', err);
   }

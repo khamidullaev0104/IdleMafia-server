@@ -55,7 +55,7 @@ async function post(url, message, userId) {
   );
 }
 
-async function getChannel(url, channelId, parametersRaw = [], userId) {
+async function getChannel(url, channelId, parametersRaw = []) {
   return await get(getChannelUrl(url, channelId, parametersRaw));
 }
 

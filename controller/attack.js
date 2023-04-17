@@ -1,7 +1,11 @@
 const { attackParseModule, loadAttackModule } = require('../common/parse');
 const AttackSchema = require('../models/Schemas/AttackSchema');
 const axios = require('axios');
-const { OFF_SEASON, END_OF_ATTACK_LOOP } = require('../config/string');
+const {
+  OFF_SEASON,
+  END_OF_ATTACK_LOOP,
+  ERROR_EMPTY_DB,
+} = require('../config/string');
 
 const getAttackResult = async (token, BotfatherChannelId) => {
   try {
@@ -41,10 +45,13 @@ const loadAttackResult = async () => {
 
 const getAttackResultFromDB = async (date) => {
   try {
-    if (date === '-1') return await AttackSchema.findOne().sort({ _id: -1 });
-    else return await AttackSchema.find({ date: { $gte: date } });
+    let res;
+    if (date === '-1') res = await AttackSchema.findOne().sort({ _id: -1 });
+    else res = await AttackSchema.findOne({ Date: { $gte: date } });
+    if (!res) return ERROR_EMPTY_DB;
+    return res;
   } catch (err) {
-    console.log('getLevelResultFromDB ERROR:', err);
+    console.log('getAttackResultFromDB ERROR:', err);
   }
 };
 

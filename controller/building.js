@@ -7,6 +7,7 @@ const {
   BUILDING_COMMAND_ENEMY_START_STRING,
   BUILDING_COMMAND_YOUR_START_STRING,
   ERROR_BUILDING_COMMAND,
+  ERROR_EMPTY_DB,
 } = require('../config/string');
 
 const getBuildingResult = async (token, BotfatherChannelId) => {
@@ -40,10 +41,13 @@ const getBuildingResult = async (token, BotfatherChannelId) => {
 
 const getBuildingResultFromDB = async (date) => {
   try {
-    if (date === '-1') return await BuildingSchema.findOne().sort({ _id: -1 });
-    else return await BuildingSchema.find({ date: { $gte: date } });
+    let res;
+    if (date === '-1') res = await BuildingSchema.findOne().sort({ _id: -1 });
+    else res = await BuildingSchema.findOne({ Date: { $gte: date } });
+    if (!res) return ERROR_EMPTY_DB;
+    return res;
   } catch (err) {
-    console.log('getLevelResultFromDB ERROR:', err);
+    console.log('getBuildingResultFromDB ERROR:', err);
   }
 };
 

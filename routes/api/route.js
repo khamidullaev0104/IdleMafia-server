@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { check, validationResult } = require('express-validator');
 const { getTotalDefense, getTotalAttack } = require('../../common/defense');
-const WAITTIME_BEFORE_PARSE = 10*1000;
+const WAITTIME_BEFORE_PARSE = 10 * 1000;
 const {
   ERROR_GET_CHANNELID,
   ERROR_EMPTY_DB,
@@ -471,10 +471,9 @@ router.post('/getBuildingWithoutSend', async (req, res) => {
   }
 });
 
-router.post('/getPointResultFromDB', async (req, res) => {
+router.get('/getPointResultFromDB', async (req, res) => {
   try {
-    const { date } = req.body;
-    const data = await getPointResultFromDB(date);
+    const data = await getPointResultFromDB(req.query.date ?? '-1');
     if (typeof data !== 'object')
       return res.status(200).json({ status: false, message: data });
     return res.status(200).json({ status: true, message: 'Success', data });
@@ -486,10 +485,9 @@ router.post('/getPointResultFromDB', async (req, res) => {
   }
 });
 
-router.post('/getAttackResultFromDB', async (req, res) => {
+router.get('/getAttackResultFromDB', async (req, res) => {
   try {
-    const { date } = req.body;
-    const data = await getAttackResultFromDB(date);
+    const data = await getAttackResultFromDB(req.query.date ?? '-1');
     if (typeof data !== 'object')
       return res.status(200).json({ status: false, message: data });
     return res.status(200).json({ status: true, message: 'Success', data });
@@ -501,10 +499,9 @@ router.post('/getAttackResultFromDB', async (req, res) => {
   }
 });
 
-router.post('/getBuildingResultFromDB', async (req, res) => {
+router.get('/getBuildingResultFromDB', async (req, res) => {
   try {
-    const { date } = req.body;
-    const data = await getBuildingResultFromDB(date);
+    const data = await getBuildingResultFromDB(req.query.date ?? '-1');
     if (typeof data !== 'object')
       return res.status(200).json({ status: false, message: data });
     return res.status(200).json({ status: true, message: 'Success', data });
@@ -515,7 +512,6 @@ router.post('/getBuildingResultFromDB', async (req, res) => {
       .json({ status: false, message: 'getBuildingResultFromDB error', err });
   }
 });
-
 
 router.post('/getTotalMembers', async (req, res) => {
   try {
@@ -646,7 +642,6 @@ router.get('/level', async (req, res) => {
   try {
     const data = await getLevelResultFromDB(req.query.date ?? '-1');
     if (typeof data !== 'object') return errorResponse(res, data);
-
     return successResponse(res, data);
   } catch (err) {
     return errorResponse(res, 'Failed to get level result from DB', err);
