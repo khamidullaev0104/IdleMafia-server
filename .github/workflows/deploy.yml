@@ -1,19 +1,10 @@
 name: Check
 on: [push, pull_request]
 env:
-  ENV_FILE: |
-    CLIENT_BASE_URL=https://gangwarsai.solvve.com
-    DISCORD_REDIRECT_URI=https://gangwarsai.solvve.com:5000/discordLogin
-    MONGO_DB_TAG=3.2.1
-    DEBUG=true
-    USE_CACHE=true
   SERVER_PORT: 4000
-
-  # CLIENT_BASE_URL: 'https://gangwarsai.solvve.com'
-  # DISCORD_REDIRECT_URI: 'https://gangwarsai.solvve.com:5000/discordLogin'
-  # MONGO_DB_TAG: 3.2.1
-  # DEBUG: true
-  # USE_CACHE: true
+  MONGO_DB_TAG: 3.2.1
+  DEBUG: true
+  USE_CACHE: true
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -83,14 +74,15 @@ jobs:
           SCRIPT_AFTER: |
             source /etc/profile.d/nvm.sh
             cd ${{ secrets.REMOTE_TARGET }}
-            echo "${{ env.ENV_FILE }}" > .env
-            echo "SERVER_PORT=${{ env.SERVER_PORT }}" >> .env
-
+            echo "SERVER_PORT=${{ env.SERVER_PORT }}" > .env
+            echo "MONGO_DB_TAG=${{ env.MONGO_DB_TAG }}" >> .env
+            echo "DEBUG=${{ env.DEBUG }}" >> .env
             echo "PATH_ROOT=${{ secrets.REMOTE_TARGET }}" >> .env
+            echo "USE_CACHE=${{ env.USE_CACHE }}" >> .env
             echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" >> .env
             echo "BOTFATHER_ID=${{ secrets.BOTFATHER_ID }}" >> .env
             echo "CHANNEL_ID=${{ secrets.CHANNEL_ID }}" >> .env
 
             npm i
-            pm2 delete "localhost:${{ env.SERVER_PORT }}" 2> /dev/null
-            pm2 start ./server.js --name "localhost:${{ env.SERVER_PORT }}"
+            pm2 delete "localhost:4000" 2> /dev/null
+            pm2 start ./server.js --name "localhost:4000"
