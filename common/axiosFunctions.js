@@ -34,6 +34,9 @@ async function get(url, userId) {
     result = { data: JSON.parse(result.toString()) };
   }
 
+  if (process.env.DEBUG ?? false)
+    console.log('[axios]response', result.data || 'no data');
+
   return result;
 }
 
