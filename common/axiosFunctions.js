@@ -20,13 +20,13 @@ async function get(url, userId) {
   if (process.env.DEBUG ?? false)
     console.log(`[axios]Cache:${process.env.USE_CACHE}`);
   let result = null;
-  let key = headers(userId).authorization + url;
+  let key = (await headers(userId)).authorization + url;
 
   if (process.env.USE_CACHE === 'true') result = axiosCache.get(key);
 
   if (result === null) {
     result = await axios.get(url, {
-      headers: headers(userId),
+      headers: await headers(userId),
     });
     if (process.env.USE_CACHE === 'true')
       axiosCache.set(key, result.data, parseInt(process.env.CACHE_TTL));
@@ -41,7 +41,7 @@ async function get(url, userId) {
 async function post(url, message, userId) {
   if (process.env.DEBUG ?? false)
     console.log('[axios]POST', `${url}:${message}`);
-  if (process.env.DEBUG ?? false) console.log(headers(userId));
+  if (process.env.DEBUG ?? false) console.log(await headers(userId));
 
   return await axios.post(
     url,
@@ -50,7 +50,7 @@ async function post(url, message, userId) {
         '<@' + (process.env.BOTFATHER_ID ?? 'NO TOKEN ') + '> ' + message,
     },
     {
-      headers: headers(userId),
+      headers: await headers(userId),
     }
   );
 }
