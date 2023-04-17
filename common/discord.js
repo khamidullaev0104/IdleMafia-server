@@ -51,4 +51,14 @@ async function removeAuthData(userId) {
   await user.save();
 }
 
-module.exports = { authorizeWithDiscord, saveAuthData, removeAuthData };
+async function getTokenFromProfile(userId) {
+  const user = await UserSchema.findOne({ _id: userId });
+  return user.DiscordAuthData?.accessToken;
+}
+
+module.exports = {
+  authorizeWithDiscord,
+  saveAuthData,
+  removeAuthData,
+  getTokenFromProfile,
+};
