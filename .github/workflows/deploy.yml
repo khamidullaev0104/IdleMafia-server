@@ -82,6 +82,7 @@ jobs:
             echo "PATH_ROOT=${{ secrets.REMOTE_TARGET }}" >> .env
             echo "USE_CACHE=${{ env.USE_CACHE }}" >> .env
             echo "DISCORD_REDIRECT_URI=${{ env.DISCORD_REDIRECT_URI }}" >> .env
+            echo "CLIENT_BASE_URL=${{ env.CLIENT_BASE_URL }}" >> .env
             echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" >> .env
             echo "BOTFATHER_ID=${{ secrets.BOTFATHER_ID }}" >> .env
             echo "CHANNEL_ID=${{ secrets.CHANNEL_ID }}" >> .env
