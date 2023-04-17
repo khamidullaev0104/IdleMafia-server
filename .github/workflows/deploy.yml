@@ -1,10 +1,12 @@
 name: Check
 on: [push, pull_request]
 env:
+  CLIENT_BASE_URL: 'https://gangwarsai.solvve.com'
   SERVER_PORT: 4000
   MONGO_DB_TAG: 3.2.1
   DEBUG: true
   USE_CACHE: true
+  DISCORD_REDIRECT_URI: 'https://gangwarsai.solvve.com:5000/discordLogin'
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -79,9 +81,13 @@ jobs:
             echo "DEBUG=${{ env.DEBUG }}" >> .env
             echo "PATH_ROOT=${{ secrets.REMOTE_TARGET }}" >> .env
             echo "USE_CACHE=${{ env.USE_CACHE }}" >> .env
+            echo "DISCORD_REDIRECT_URI=${{ env.DISCORD_REDIRECT_URI }}" >> .env
+            echo "CLIENT_BASE_URL=${{ env.CLIENT_BASE_URL }}" >> .env
             echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" >> .env
             echo "BOTFATHER_ID=${{ secrets.BOTFATHER_ID }}" >> .env
             echo "CHANNEL_ID=${{ secrets.CHANNEL_ID }}" >> .env
+            echo "DISCORD_CLIENT_ID=${{ secrets.DISCORD_CLIENT_ID }}" >> .env
+            echo "DISCORD_CLIENT_SECRET=${{ secrets.DISCORD_CLIENT_SECRET }}" >> .env
 
             npm i
             pm2 delete "localhost:4000" 2> /dev/null

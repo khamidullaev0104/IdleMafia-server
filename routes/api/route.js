@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { check, validationResult } = require('express-validator');
 const { getTotalDefense, getTotalAttack } = require('../../common/defense');
+const WAITTIME_BEFORE_PARSE = 10*1000;
 const {
   ERROR_GET_CHANNELID,
   ERROR_EMPTY_DB,
@@ -43,6 +44,11 @@ const {
   getUsersForNotification,
   setPasswordChangeRequest,
 } = require('../../common/auth');
+const {
+  authorizeWithDiscord,
+  saveAuthData,
+  removeAuthData,
+} = require('../../common/discord');
 const { loadBuildingModule } = require('../../common/countBuildings');
 const {
   getTotalNumberOfGangMember,
@@ -50,6 +56,7 @@ const {
   getTimeUntilGW,
   getDatesFromCommandDB,
 } = require('../../common/other');
+const { decodeBase64 } = require('../../utils/text');
 
 const { loadCaposList } = require('../../common/capo');
 const { CHANNEL_ID, BOTFATHER_ID, TOKEN } = require('../../config/constants');
@@ -101,6 +108,49 @@ router.post(
     }
   }
 );
+
+router.get('/discordLogin', async ({ query }, res) => {
+  const { code, state } = query;
+
+  let userId = null;
+  if (state) {
+    try {
+      userId = JSON.parse(decodeBase64(state)).userId;
+    } catch (err) {
+      console.log('/discordLogin error', err);
+    }
+  }
+  if (!userId) {
+    return;
+  }
+
+  if (code) {
+    try {
+      const oauthData = await authorizeWithDiscord(code);
+      await saveAuthData(userId, oauthData);
+
+      res
+        .writeHead(302, {
+          Location: `${process.env.CLIENT_BASE_URL}?discordBinded=1`,
+        })
+        .end();
+    } catch (error) {
+      console.error('discordLogin error: ', error);
+    }
+  }
+});
+
+router.delete('/discordProfile', async (req, res) => {
+  try {
+    const { userId } = req.body;
+    await removeAuthData(userId);
+
+    return successResponse(res);
+  } catch (err) {
+    console.log('/discordProfile error', err);
+    return errorResponse(res, 'Error', err);
+  }
+});
 
 router.post('/getUserbyId', async (req, res) => {
   try {
@@ -211,7 +261,7 @@ router.post('/createMessage', async (req, res) => {
   const { message } = req.body;
   try {
     await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, message);
-    await new Promise((r) => setTimeout(r, 300));
+    await new Promise((r) => setTimeout(r, WAITTIME_BEFORE_PARSE));
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     if (BotfatherChannelId === undefined)
       return res
@@ -220,7 +270,11 @@ router.post('/createMessage', async (req, res) => {
     let data;
     switch (message) {
       case 'level':
-        data = await getLevelResult(TOKEN, BotfatherChannelId);
+        data = await getLevelResult(
+          TOKEN,
+          BotfatherChannelId,
+          req.headers['x-user-id']
+        );
         break;
       case 'point':
         data = await getPointResult(TOKEN, BotfatherChannelId);
@@ -263,7 +317,11 @@ router.post('/getLevelWithoutSend', async (req, res) => {
         status: false,
         message: ERROR_GET_CHANNELID,
       });
-    const data = await getLevelResult(TOKEN, BotfatherChannelId);
+    const data = await getLevelResult(
+      TOKEN,
+      BotfatherChannelId,
+      req.headers['x-user-id']
+    );
     if (typeof data !== 'object')
       return res.status(200).json({ status: false, message: data });
     return res.status(200).json({ status: true, message: 'Success', data });
@@ -278,7 +336,7 @@ router.post('/getLevelWithoutSend', async (req, res) => {
 router.post('/getPoint', async (req, res) => {
   try {
     await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, 'point');
-    await new Promise((r) => setTimeout(r, 300));
+    await new Promise((r) => setTimeout(r, WAITTIME_BEFORE_PARSE));
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     if (BotfatherChannelId === undefined)
       return res.status(200).json({
@@ -320,7 +378,7 @@ router.post('/getPointWithoutSend', async (req, res) => {
 router.post('/getAttack', async (req, res) => {
   try {
     await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, 'attack');
-    await new Promise((r) => setTimeout(r, 300));
+    await new Promise((r) => setTimeout(r, 1000));
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     if (BotfatherChannelId === undefined)
       return res.status(200).json({
@@ -374,7 +432,7 @@ router.post('/getAttackWithoutSend', async (req, res) => {
 router.post('/getBuilding', async (req, res) => {
   try {
     await sendMessageToChannel(TOKEN, CHANNEL_ID, BOTFATHER_ID, 'building');
-    await new Promise((r) => setTimeout(r, 300));
+    await new Promise((r) => setTimeout(r, 1000));
     const BotfatherChannelId = await getChannelID(TOKEN, BOTFATHER_ID);
     if (BotfatherChannelId === undefined)
       return res.status(200).json({
@@ -458,6 +516,7 @@ router.post('/getBuildingResultFromDB', async (req, res) => {
   }
 });
 
+
 router.post('/getTotalMembers', async (req, res) => {
   try {
     const data = await getTotalNumberOfGangMember();
@@ -485,24 +544,6 @@ router.post('/getRankByFP', async (req, res) => {
   } catch (err) {
     console.log(err);
     return errorResponse(res, 'getRankByFP error', err);
-  }
-});
-
-router.post('/getTotalMembers', async (req, res) => {
-  try {
-    const data = await getTotalNumberOfGangMember();
-    if (typeof data !== 'object')
-      return res.status(200).json({ status: false, message: ERROR_EMPTY_DB });
-    return res.status(200).json({
-      status: true,
-      message: 'Success',
-      data: data ? data.Datas.length : 0,
-    });
-  } catch (err) {
-    console.log(err);
-    return res
-      .status(200)
-      .json({ status: false, message: 'getTotalMembers error', err });
   }
 });
 

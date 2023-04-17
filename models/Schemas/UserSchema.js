@@ -29,6 +29,14 @@ const UserSchema = new mongoose.Schema({
   Avatar: {
     type: String,
   },
+  DiscordAuthData: {
+    accessToken: String,
+    expiresIn: Number,
+    refreshToken: String,
+    scope: String,
+    tokenType: String,
+    isActive: Boolean,
+  },
   Date: {
     type: Date,
     default: Date.now,

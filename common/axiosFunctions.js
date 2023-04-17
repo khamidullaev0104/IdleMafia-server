@@ -1,28 +1,32 @@
 const axios = require('axios');
 const { getChannelUrl } = require('./getChannelUrl');
+const { getTokenFromProfile } = require('./discord');
 
 const Cache = require('ttl-file-cache');
 const axiosCache = new Cache({ dir: './data/cache' });
 
-function headers() {
+async function headers(userId) {
+  const discordToken =
+    process.env.DISCORD_TOKEN || (await getTokenFromProfile(userId));
+
   return {
-    authorization: process.env.DISCORD_TOKEN ?? 'NO TOKEN ',
+    authorization: discordToken ?? 'NO TOKEN ',
     'content-type': 'application/json',
   };
 }
 
-async function get(url) {
+async function get(url, userId) {
   if (process.env.DEBUG ?? false) console.log('[axios]GET', url);
   if (process.env.DEBUG ?? false)
     console.log(`[axios]Cache:${process.env.USE_CACHE}`);
   let result = null;
-  let key = headers().authorization + url;
+  let key = headers(userId).authorization + url;
 
   if (process.env.USE_CACHE === 'true') result = axiosCache.get(key);
 
   if (result === null) {
     result = await axios.get(url, {
-      headers: headers(),
+      headers: headers(userId),
     });
     if (process.env.USE_CACHE === 'true')
       axiosCache.set(key, result.data, parseInt(process.env.CACHE_TTL));
@@ -34,10 +38,10 @@ async function get(url) {
   return result;
 }
 
-async function post(url, message) {
+async function post(url, message, userId) {
   if (process.env.DEBUG ?? false)
     console.log('[axios]POST', `${url}:${message}`);
-  if (process.env.DEBUG ?? false) console.log(headers());
+  if (process.env.DEBUG ?? false) console.log(headers(userId));
 
   return await axios.post(
     url,
@@ -46,17 +50,17 @@ async function post(url, message) {
         '<@' + (process.env.BOTFATHER_ID ?? 'NO TOKEN ') + '> ' + message,
     },
     {
-      headers: headers(),
+      headers: headers(userId),
     }
   );
 }
 
-async function getChannel(url, channelId, parametersRaw = []) {
+async function getChannel(url, channelId, parametersRaw = [], userId) {
   return await get(getChannelUrl(url, channelId, parametersRaw));
 }
 
-async function postToChannel(url, channelId, message) {
-  return await post(getChannelUrl(url, channelId), message);
+async function postToChannel(url, channelId, message, userId) {
+  return await post(getChannelUrl(url, channelId), message, userId);
 }
 
 module.exports = {
