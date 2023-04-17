@@ -16,6 +16,8 @@ module.exports = Object.freeze({
   ERROR_GET_LEVEL: 'Failed to get level data',
   ERROR_ACCESS_DM: 'Channel Error- Can not access in DM',
   ERROR_EMPTY_DB: 'Empty DB',
+  ERROR_COMMAND_TYPE:
+    'Command type error- valid type:Level, Point, Building, Attack',
   ERROR_PERMISSION_ADMIN: 'You do not have admin permission',
   INVALID_USERID: 'Invalid User ID',
   INVALID_USERNAME: 'Invalid Credentials-Username can not be found',

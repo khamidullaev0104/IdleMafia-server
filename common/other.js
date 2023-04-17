@@ -1,6 +1,10 @@
 const axios = require('axios');
 const PointSchema = require('../models/Schemas/PointSchema');
 const LevelSchema = require('../models/Schemas/LevelSchema');
+const BuildingSchema = require('../models/Schemas/BuildingSchema');
+const AttackSchema = require('../models/Schemas/AttackSchema');
+
+const { ERROR_EMPTY_DB, ERROR_COMMAND_TYPE } = require('../config/string');
 
 async function loginByDiscordEmailPassword(email, password) {
   try {
@@ -102,10 +106,36 @@ async function getTimeUntilGW() {
   }
 }
 
+async function getDatesFromCommandDB(type) {
+  try {
+    let res;
+    switch (type) {
+      case 'Level':
+        res = await LevelSchema.find().select('Date -_id');
+        break;
+      case 'Point':
+        res = await PointSchema.find().select('Date -_id');
+        break;
+      case 'Attack':
+        res = await AttackSchema.find().select('Date -_id');
+        break;
+      case 'Building':
+        res = await BuildingSchema.find().select('Date -_id');
+        break;
+      default:
+        return ERROR_COMMAND_TYPE;
+    }
+    if (res === null) ERROR_EMPTY_DB;
+    return res;
+  } catch (err) {
+    console.error('getDatesFromCommandDB error: ', err.message);
+  }
+}
 module.exports = {
   loginByDiscordEmailPassword,
   getProfileFromToken,
   getTotalNumberOfGangMember,
   memberRankByFP,
   getTimeUntilGW,
+  getDatesFromCommandDB,
 };

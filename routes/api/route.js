@@ -48,6 +48,7 @@ const {
   getTotalNumberOfGangMember,
   memberRankByFP,
   getTimeUntilGW,
+  getDatesFromCommandDB,
 } = require('../../common/other');
 
 const { loadCaposList } = require('../../common/capo');
@@ -192,13 +193,11 @@ router.post(
         return res.status(200).json({ status: false, message: ret });
       }
 
-      return res
-        .status(200)
-        .json({
-          status: true,
-          message: SUCCESS_REGISTER_BUT_NOT_ALLOW,
-          data: ret,
-        });
+      return res.status(200).json({
+        status: true,
+        message: SUCCESS_REGISTER_BUT_NOT_ALLOW,
+        data: ret,
+      });
     } catch (err) {
       console.log(err);
       return res
@@ -699,13 +698,11 @@ router.post('/getUsersForNotification', async (req, res) => {
     const ret = await getUsersForNotification();
     if (typeof ret !== 'object')
       return res.status(200).json({ status: false, message: ret });
-    return res
-      .status(200)
-      .json({
-        status: true,
-        message: 'getUsersForNotification success',
-        data: ret,
-      });
+    return res.status(200).json({
+      status: true,
+      message: 'getUsersForNotification success',
+      data: ret,
+    });
   } catch (err) {
     console.error(err.message);
     return res
@@ -714,4 +711,23 @@ router.post('/getUsersForNotification', async (req, res) => {
   }
 });
 
+router.post('/getDatesFromCommandDB', async (req, res) => {
+  try {
+    const { id, type } = req.body;
+    const permission = await getPermission(id);
+    if (permission !== PERMISSION_ADMIN)
+      return res
+        .status(200)
+        .json({ status: false, message: ERROR_PERMISSION_ADMIN });
+    const data = await getDatesFromCommandDB(type);
+    if (typeof data === 'string')
+      return res.status(200).json({ status: false, message: data });
+    return res.status(200).json({ status: true, message: 'Success', data });
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(200)
+      .json({ status: false, message: 'getDatesFromCommandDB error', err });
+  }
+});
 module.exports = router;
