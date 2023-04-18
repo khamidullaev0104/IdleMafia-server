@@ -69,7 +69,9 @@ function errorResponse(res, message, error) {
   if (error) {
     console.log(error);
   }
-  return res.status(200).json({ status: false, message, err: error });
+
+  return res.status(200)
+      .json({ status: false, message: err.toString()});
 }
 
 router.post(
@@ -308,7 +310,7 @@ router.post('/getPoint', async (req, res) => {
     console.log(err);
     return res
       .status(200)
-      .json({ status: false, message: 'getPoint error', err });
+      .json({ status: false, message: err.toString()});
   }
 });
 
@@ -357,7 +359,7 @@ router.post('/getAttack', async (req, res) => {
     console.log(err);
     return res
       .status(200)
-      .json({ status: false, message: 'getAttack error', err });
+      .json({ status: false, message: err.toString()});
   }
 });
 
@@ -418,7 +420,7 @@ router.post('/getBuilding', async (req, res) => {
     console.log(err);
     return res
       .status(200)
-      .json({ status: false, message: 'getBuilding error', err });
+      .json({ status: false, message: err.toString()});
   }
 });
 

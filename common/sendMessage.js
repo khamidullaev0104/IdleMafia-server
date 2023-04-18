@@ -13,7 +13,12 @@ async function sendMessageToChannel(token, channelID, botFatherID, message) {
       }
     );
   } catch (err) {
-    console.log('sendMessage Error', err);
+    console.log('sendMessage Error', err.response);
+    if([400,401,402,403].indexOf(err.response.status)!==-1){
+      throw new Error('Problem with discord access, probably token is expired');
+    }
+
+    throw new Error(err.response);
   }
 }
 
