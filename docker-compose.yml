@@ -14,18 +14,18 @@ services:
 
   # mongo-gui repo: https://github.com/arunbandari/mongo-gui/
   # build image:docker build -t mongo-gui .
-  mongo-gui:
-    container_name: 'mongo-gui'
-    image: mongo-gui:latest
-    depends_on:
-      - mongodb
-    restart: unless-stopped
-    ports:
-      - '4321:4321'
-    networks:
-      - gangwars-network
-    environment:
-      - MONGO_URL=mongodb://mongodb:27017
+  # mongo-gui:
+  #   container_name: 'mongo-gui'
+  #   image: mongo-gui:latest
+  #   depends_on:
+  #     - mongodb
+  #   restart: unless-stopped
+  #   ports:
+  #     - '4321:4321'
+  #   networks:
+  #     - gangwars-network
+  #   environment:
+  #     - MONGO_URL=mongodb://mongodb:27017
 
 volumes:
   gangwars-mongodb_data:
