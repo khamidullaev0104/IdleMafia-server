@@ -46,11 +46,6 @@ const {
   getUsersForNotification,
   setPasswordChangeRequest,
 } = require('../../common/auth');
-const {
-  authorizeWithDiscord,
-  saveAuthData,
-  removeAuthData,
-} = require('../../common/discord');
 const { loadBuildingModule } = require('../../common/countBuildings');
 const {
   getTotalNumberOfGangMember,
@@ -58,7 +53,6 @@ const {
   getTimeUntilGW,
   getDatesFromCommandDB,
 } = require('../../common/other');
-const { decodeBase64 } = require('../../utils/text');
 
 const { loadCaposList } = require('../../common/capo');
 const { CHANNEL_ID, BOTFATHER_ID } = require('../../config/constants');
@@ -110,49 +104,6 @@ router.post(
     }
   }
 );
-
-router.get('/discordLogin', async ({ query }, res) => {
-  const { code, state } = query;
-
-  let userId = null;
-  if (state) {
-    try {
-      userId = JSON.parse(decodeBase64(state)).userId;
-    } catch (err) {
-      console.log('/discordLogin error', err);
-    }
-  }
-  if (!userId) {
-    return;
-  }
-
-  if (code) {
-    try {
-      const oauthData = await authorizeWithDiscord(code);
-      await saveAuthData(userId, oauthData);
-
-      res
-        .writeHead(302, {
-          Location: `${process.env.CLIENT_BASE_URL}?discordBinded=1`,
-        })
-        .end();
-    } catch (error) {
-      console.error('discordLogin error: ', error);
-    }
-  }
-});
-
-router.delete('/discordProfile', async (req, res) => {
-  try {
-    const { userId } = req.body;
-    await removeAuthData(userId);
-
-    return successResponse(res);
-  } catch (err) {
-    console.log('/discordProfile error', err);
-    return errorResponse(res, 'Error', err);
-  }
-});
 
 router.post('/getUserbyId', async (req, res) => {
   try {

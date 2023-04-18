@@ -118,6 +118,7 @@ async function getUserById(id) {
         avatar: user.Avatar,
         timezone: user.Timezone,
         game_username: user.Game_Username,
+        discordToken: user.DiscordData?.token,
         permission: user.Permission,
       },
     };
@@ -174,6 +175,10 @@ async function changeUserInfo(info) {
     user.Username = info.username;
     user.Email = info.email;
     user.Game_Username = info.gangName;
+    user.DiscordData = {
+      token: info.discordToken,
+      isActive: true,
+    };
 
     if (info.isPasswordChange) {
       const isMatch = await bcrypt.compare(info.currentPassword, user.Password);
