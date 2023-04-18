@@ -129,7 +129,6 @@ router.get('/discordLogin', async ({ query }, res) => {
   if (code) {
     try {
       const oauthData = await authorizeWithDiscord(code);
-      K;
       await saveAuthData(userId, oauthData);
 
       res
