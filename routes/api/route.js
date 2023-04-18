@@ -70,8 +70,7 @@ function errorResponse(res, message, error) {
     console.log(error);
   }
 
-  return res.status(200)
-      .json({ status: false, message: err.toString()});
+  return res.status(200).json({ status: false, message: error.toString() });
 }
 
 router.post(
@@ -218,7 +217,10 @@ router.post('/createMessage', async (req, res) => {
     const discordToken = await getUserDiscordToken(req.headers['x-user-id']);
     await sendMessageToChannel(discordToken, CHANNEL_ID, BOTFATHER_ID, message);
     await new Promise((r) => setTimeout(r, WAITTIME_BEFORE_PARSE));
-    const BotfatherChannelId = await getChannelID(discordToken, BOTFATHER_ID);
+    const BotfatherChannelId = await getChannelID(
+      req.headers['x-user-id'],
+      BOTFATHER_ID
+    );
     if (BotfatherChannelId === undefined)
       return res
         .status(200)
@@ -269,7 +271,10 @@ router.post('/sendMessageOnly', async (req, res) => {
 router.post('/getLevelWithoutSend', async (req, res) => {
   try {
     const discordToken = await getUserDiscordToken(req.headers['x-user-id']);
-    const BotfatherChannelId = await getChannelID(discordToken, BOTFATHER_ID);
+    const BotfatherChannelId = await getChannelID(
+      req.headers['x-user-id'],
+      BOTFATHER_ID
+    );
     if (BotfatherChannelId === undefined)
       return res.status(200).json({
         status: false,
@@ -296,7 +301,10 @@ router.post('/getPoint', async (req, res) => {
     const discordToken = await getUserDiscordToken(req.headers['x-user-id']);
     await sendMessageToChannel(discordToken, CHANNEL_ID, BOTFATHER_ID, 'point');
     await new Promise((r) => setTimeout(r, WAITTIME_BEFORE_PARSE));
-    const BotfatherChannelId = await getChannelID(discordToken, BOTFATHER_ID);
+    const BotfatherChannelId = await getChannelID(
+      req.headers['x-user-id'],
+      BOTFATHER_ID
+    );
     if (BotfatherChannelId === undefined)
       return res.status(200).json({
         status: false,
@@ -308,16 +316,17 @@ router.post('/getPoint', async (req, res) => {
     return res.status(200).json({ status: true, message: 'Success', data });
   } catch (err) {
     console.log(err);
-    return res
-      .status(200)
-      .json({ status: false, message: err.toString()});
+    return res.status(200).json({ status: false, message: err.toString() });
   }
 });
 
 router.post('/getPointWithoutSend', async (req, res) => {
   try {
     const discordToken = await getUserDiscordToken(req.headers['x-user-id']);
-    const BotfatherChannelId = await getChannelID(discordToken, BOTFATHER_ID);
+    const BotfatherChannelId = await getChannelID(
+      req.headers['x-user-id'],
+      BOTFATHER_ID
+    );
     if (BotfatherChannelId === undefined)
       return res.status(200).json({
         status: false,
@@ -345,7 +354,10 @@ router.post('/getAttack', async (req, res) => {
       'attack'
     );
     await new Promise((r) => setTimeout(r, 1000));
-    const BotfatherChannelId = await getChannelID(discordToken, BOTFATHER_ID);
+    const BotfatherChannelId = await getChannelID(
+      req.headers['x-user-id'],
+      BOTFATHER_ID
+    );
     if (BotfatherChannelId === undefined)
       return res.status(200).json({
         status: false,
@@ -357,9 +369,7 @@ router.post('/getAttack', async (req, res) => {
     return res.status(200).json({ status: true, message: 'Success', data });
   } catch (err) {
     console.log(err);
-    return res
-      .status(200)
-      .json({ status: false, message: err.toString()});
+    return res.status(200).json({ status: false, message: err.toString() });
   }
 });
 
@@ -378,7 +388,10 @@ router.get('/attack', async (req, res) => {
 router.post('/getAttackWithoutSend', async (req, res) => {
   try {
     const discordToken = await getUserDiscordToken(req.headers['x-user-id']);
-    const BotfatherChannelId = await getChannelID(discordToken, BOTFATHER_ID);
+    const BotfatherChannelId = await getChannelID(
+      req.headers['x-user-id'],
+      BOTFATHER_ID
+    );
     if (BotfatherChannelId === undefined)
       return res.status(200).json({
         status: false,
@@ -406,7 +419,10 @@ router.post('/getBuilding', async (req, res) => {
       'building'
     );
     await new Promise((r) => setTimeout(r, 1000));
-    const BotfatherChannelId = await getChannelID(discordToken, BOTFATHER_ID);
+    const BotfatherChannelId = await getChannelID(
+      req.headers['x-user-id'],
+      BOTFATHER_ID
+    );
     if (BotfatherChannelId === undefined)
       return res.status(200).json({
         status: false,
@@ -418,16 +434,17 @@ router.post('/getBuilding', async (req, res) => {
     return res.status(200).json({ status: true, message: 'Success', data });
   } catch (err) {
     console.log(err);
-    return res
-      .status(200)
-      .json({ status: false, message: err.toString()});
+    return res.status(200).json({ status: false, message: err.toString() });
   }
 });
 
 router.post('/getBuildingWithoutSend', async (req, res) => {
   try {
     const discordToken = await getUserDiscordToken(req.headers['x-user-id']);
-    const BotfatherChannelId = await getChannelID(discordToken, BOTFATHER_ID);
+    const BotfatherChannelId = await getChannelID(
+      req.headers['x-user-id'],
+      BOTFATHER_ID
+    );
     if (BotfatherChannelId === undefined)
       return res.status(200).json({
         status: false,
