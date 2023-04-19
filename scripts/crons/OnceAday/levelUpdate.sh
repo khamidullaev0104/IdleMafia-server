@@ -1,5 +1,5 @@
 #!/bin/bash
-source "../output.sh"
+source "../../output.sh"
 CRONS_DIR=./crons
 
 cd /home/gangwars/www/server
