@@ -71,7 +71,17 @@ async function memberRankByFP() {
         return bTFP.unit - aTFP.unit;
       }
     });
-    return res;
+
+    let ret = [];
+    for (let i = 0; i < res.Datas.length; i++) {
+      const tfp = parseTFP(res.Datas[i].tfp.replace(' ', ''));
+      ret.push({
+        name: res.Datas[i].name,
+        tfp: res.Datas[i].tfp,
+        nTfp: tfp.fp * 1000 ** tfp.unit,
+      });
+    }
+    return ret;
   } catch (err) {
     console.error('memberRankByFP error: ', err.message);
   }

@@ -527,7 +527,7 @@ router.post('/getRankByFP', async (req, res) => {
     const data = await memberRankByFP();
     if (data === null || data.length === 0)
       return errorResponse(res, ERROR_EMPTY_DB, null);
-    return successResponse(res, data.Datas);
+    return successResponse(res, data);
   } catch (err) {
     console.log(err);
     return errorResponse(res, 'getRankByFP error', err);
